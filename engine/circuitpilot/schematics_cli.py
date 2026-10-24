@@ -13,6 +13,7 @@ from .design_runner import _amplifier_measurements, _bias_measurements
 from .designs import EXAMPLE_DESIGNS
 from .rawdata import parse_ascii_raw
 from .schematic import connectivity_manifest, connectivity_pin_map, render_asc, required_support_files
+from .schematic_validation import read_native_netlist, validate_native_netlist
 from .simulation import SimulationError, discover_ltspice
 
 
@@ -63,18 +64,40 @@ def export_and_simulate(output_root: str | Path, executable: str | None = None, 
         folder.mkdir()  # do not replace earlier artifacts
         asc_path, _, _, _ = _write_design_files(design, folder)
 
+        net_path = folder / f"{design.design_id}.net"
         try:
-            completed = subprocess.run([str(exe), "-ascii", "-b", str(asc_path)], cwd=str(folder),
+            compiled = subprocess.run([str(exe), "-netlist", str(asc_path)], cwd=str(folder),
+                                      capture_output=True, text=True, timeout=timeout_seconds, check=False)
+        except subprocess.TimeoutExpired as exc:
+            raise SimulationError(f"LTspice native netlist compilation timed out on {asc_path}") from exc
+        if compiled.returncode != 0 or not net_path.is_file():
+            detail = (compiled.stderr or compiled.stdout or "").strip()
+            raise SimulationError(f"LTspice failed to compile {asc_path.name} to native .net (exit {compiled.returncode}): {detail}")
+
+        native_validation = validate_native_netlist(design.ir, read_native_netlist(net_path))
+        if not native_validation["all_match"]:
+            (folder / "schematic-verification.json").write_text(json.dumps({
+                "design_id": design.design_id,
+                "simulation_status": "not_run",
+                "verification_status": "failed",
+                "design_pass": False,
+                "production_qualified": False,
+                "native_netlist": net_path.name,
+                "native_netlist_validation": native_validation,
+            }, indent=2) + "\n", encoding="utf-8")
+            raise SimulationError(f"Native LTspice netlist does not match CircuitIR for {design.design_id}")
+
+        try:
+            completed = subprocess.run([str(exe), "-ascii", "-b", str(net_path)], cwd=str(folder),
                                        capture_output=True, text=True, timeout=timeout_seconds, check=False)
         except subprocess.TimeoutExpired as exc:
-            raise SimulationError(f"LTspice timed out on schematic {asc_path}") from exc
+            raise SimulationError(f"LTspice simulation timed out on native netlist {net_path}") from exc
         if completed.returncode != 0:
             detail = (completed.stderr or completed.stdout or "").strip()
-            raise SimulationError(f"LTspice rejected {asc_path.name} (exit {completed.returncode}): {detail}")
+            raise SimulationError(f"LTspice failed to simulate {net_path.name} (exit {completed.returncode}): {detail}")
 
         raw_path = folder / f"{design.design_id}.raw"
         log_path = folder / f"{design.design_id}.log"
-        net_path = folder / f"{design.design_id}.net"
         if not raw_path.is_file() or not log_path.is_file():
             raise SimulationError(f"LTspice did not produce raw and log outputs for {asc_path}")
         raw_plot = parse_ascii_raw(raw_path.read_text(encoding="ascii", errors="replace"))
@@ -98,7 +121,8 @@ def export_and_simulate(output_root: str | Path, executable: str | None = None, 
             "schematic": asc_path.name,
             "support_symbols": sorted(path.name for path in folder.glob("*.asy")),
             "netlist_from_schematic": net_path.name if net_path.is_file() else None,
-            "netlist_connectivity_check": "LTspice batch acceptance plus IR pin labels; generated .net saved when emitted",
+            "netlist_connectivity_check": "passed",
+            "native_netlist_validation": native_validation,
             "raw": raw_path.name,
             "log": log_path.name,
             "measurements": measurements,
@@ -106,6 +130,7 @@ def export_and_simulate(output_root: str | Path, executable: str | None = None, 
             "connectivity_manifest": {reference_name: list(nodes) for reference_name, nodes in connectivity_manifest(design.ir).items()},
             "symbol_pin_mapping": connectivity_pin_map(design.ir),
             "limitations": "Generic Level 1 MOSFET, generic BJT, and self-contained behavioral op-amp models; this is simulation evidence only.",
+            "production_qualified": False,
         }
         report_path = folder / "schematic-verification.json"
         report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

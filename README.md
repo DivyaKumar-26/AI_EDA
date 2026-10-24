@@ -27,27 +27,24 @@ The intended workflow is:
 
 ## Current project state
 
-The committed baseline is `9a09a23`. It contains the six-design schematic grid exporter and
-earlier generic demonstration models. There are additional uncommitted changes in the
-working tree. Those changes are still in progress, have not completed an independent review,
-and do not have a successful final six-design simulator run.
+The repository's synced baseline is `26fe3c9`, which contains the six-design schematic grid
+exporter and generic demonstration models. The current working tree adds strict JSON
+requirement validation/evaluation, nominal supply/source-resistance/load insertion for CIR
+spec runs, and a native `.net` parser/comparator used by the ASC simulation workflow. These
+changes have unit coverage. LTspice 26.1.1 has completed all six CIR simulations and all six
+ASC native-netlist simulations; every ASC comparison matches its CIR report. The exact
+artifacts and limits of this evidence are recorded below. Final independent review of the
+implementation and simulator evidence is complete. The reviewer checked MOS, BJT, and op-amp
+native-netlist normalization against actual LTspice 26.1.1 netlists and audited all six CIR/
+ASC reports and comparisons; the review found no actionable issues.
 
-The in-progress hardening work includes:
-
-- Named LTspice library entries: 2N7002, 2N3904, and LT1001, with library paths and hashes
-  recorded when available.
-- A shared IR-based netlist/schematic workflow, including three-pin native VDMOS and
-  five-pin LT1001 mapping.
-- Strict JSON operating conditions and hard measurement constraints for the six examples.
-- AC, operating-point, DC-sweep, and transient measurements, plus sampled supply,
-  temperature, resistor, and capacitor corners.
-- ASC native `.net` compilation and connectivity validation support.
-- A user-facing design requirement template with a copy/paste prompt and a machine-readable
-  example.
-
-These source changes should be treated as an implementation candidate. Some bugs were found
-and patched during development; the full review and final evidence run remain outstanding.
-Do not treat an in-progress source state as a validated release.
+The implementation remains incomplete. It does not yet execute requested temperature,
+supply, resistor, or capacitor corners; apply transient input amplitude/frequency; measure
+THD or output swing; provide vendor device models; or apply a user specification to the ASC
+export. Spec reports show numerical limit results separately and keep the overall design
+failed while requested operating-condition coverage is incomplete. The review does not
+establish production or hardware qualification; do not treat this source state as a qualified
+release.
 
 ## Supported examples
 
@@ -62,17 +59,42 @@ The current reference set contains:
 | `mosfet-bias-network` | MOSFET divider bias | LTspice 2N7002 |
 | `bjt-bias-network` | BJT divider bias | LTspice 2N3904 |
 
+The device/model column names the intended reference device families. The current generated
+simulations still use the generic `CP_NMOS`, `CP_NPN`, and `CP_OPAMP` models in
+`engine/circuitpilot/designs.py`; the named reference devices are not yet used by these
+designs.
+
 The documented reference conditions use a 12 V single supply for transistor designs, ±15 V
 for op-amp designs, 50 Ω source resistance, 10 kΩ amplifier load, 10 mV peak at 1 kHz, 1%
 resistor tolerance, 10% capacitor tolerance, and temperature points within 0–70 °C. These
 values are reference assumptions, not user-confirmed product requirements.
 
-The common-emitter design was changed during hardening to add 100 Ω of unbypassed emitter
-feedback, intended to reduce distortion while keeping total DC emitter resistance near 1 kΩ.
-That updated circuit has not yet received a final LTspice run. Its BOM, corner behavior,
-gain, and distortion still need verification.
+The proposed common-emitter change is to add 100 Ω of unbypassed emitter feedback to reduce
+distortion while keeping total DC emitter resistance near 1 kΩ. This change is not applied
+in `designs.py`: the current circuit has a 1 kΩ emitter resistor fully bypassed by `CE`.
+The proposed circuit's BOM, corner behavior, gain, and distortion have not been verified.
 
 ## Results and evidence
+
+### Current LTspice 26.1.1 six-design run
+
+LTspice 26.1.1 completed the six CIR simulations in
+`output/ltspice_26_1_1_cir_20261024`, with one `verification-report.json` per design. The
+reports completed and passed their available topology checks. This run does not cover the
+unimplemented user-specification corners or transient metrics described above.
+
+The matching ASC workflow completed all six native netlist compilations and simulations in
+`output/ltspice_26_1_1_asc_complete_20261024`. Every native netlist passed the IR pin, value,
+and model checks. All measurements match the corresponding CIR report: the per-design
+comparison has 16 checks for each bias network and op-amp, and 21 checks for each amplifier
+design, for 106 checks total in the saved reports. Every numeric relative error is 0.0. The
+reports set `production_qualified` to `false`; these results establish simulation agreement
+for the current generic models and implemented analyses only.
+
+Earlier folders `output/ltspice_26_1_1_asc_20261024`,
+`output/ltspice_26_1_1_asc_validated_20261024`, and
+`output/ltspice_26_1_1_asc_final_20261024` are partial diagnostic runs. Use the complete
+folder above as the six-design ASC evidence set.
 
 ### Historical completed artifacts
 
@@ -92,7 +114,11 @@ tolerance from 9/9 start states with 1.33 mean actions. A seeded random walk suc
 comparison, not held-out or cross-topology RL evidence. Training replays a premeasured
 table.
 
-### Current hardening diagnostics
+### Historical hardening diagnostic notes
+
+The following v1/v2 run descriptions are historical notes. Their
+`output/production_reference_v1` and `output/production_reference_v2` folders are not present
+in this synced clone.
 
 `output/production_reference_v1` stopped during its first common-source run because the
 transient path passed an `ExampleDesign` where it required a `CircuitIR`. That incomplete
@@ -112,23 +138,17 @@ feedback change described above is a proposed correction; it is not yet verified
 A separate 2N7002 probe measured a high cutoff near 4.62 MHz. Probes validate only the
 specific probe decks and conditions, not the complete reference designs.
 
-LTspice 26.0.1 successfully compiled a minimal ASC probe to `.net` with `-netlist` and an
-explicit symbol path. Native compilation and simulation of all six current ASC files are
-still pending. A minimal probe is not proof of the six schematic exports.
-
 ## Known limitations and improvements required
 
-- Complete a fresh run from the final source for all six CIR designs, including nominal
-  AC/OP or DC analyses, transient checks for amplifiers, and every required corner.
-- Review the common-emitter feedback adjustment against the 5% THD reference ceiling without
-  loosening the target to fit the result.
-- Run each ASC through LTspice native netlisting, compare its device pins and values with
-  the IR, then simulate the emitted `.net` file and compare measured AC/OP or DC outputs
-  with the matching CIR report.
-- Check every report’s scenario aggregation, source-to-output measurement, missing-cutoff
-  behavior, temperature schedule, and recorded component values.
-- Complete an independent review of all current uncommitted changes and repair verified
-  findings.
+- Add and run the requested temperature, supply, resistor, and capacitor corner matrix,
+  including exact scenario coverage in each report.
+- Evaluate the proposed common-emitter feedback change against the 5% THD reference ceiling
+  without loosening the target to fit the result; the change is not yet applied to the design.
+- Apply validated user specifications to ASC generation and simulation, with matching limits
+  and condition coverage in the ASC reports.
+- Add transient input amplitude/frequency, THD, and output-swing measurements, then verify
+  those metrics in both CIR and ASC workflows.
+- Repeat independent review after changes to the implementation or simulator evidence.
 - Verify exact manufacturer model provenance and selected supplier/package pinouts.
   Installed library files are opaque and hashed, not independently audited.
 - Check component voltage, current, power, temperature, capacitor polarity, and derating
@@ -178,8 +198,11 @@ requiring LTspice. Add `--simulate --output-dir output/<new-rc-run-folder>` to r
 LTspice AC sweep and measure the transfer cutoff. The RC sweep is fixed from 1 Hz to 1 MHz;
 a cutoff outside that band cannot be measured.
 
-No final simulator or test command was run after the latest hardening edits. Do not quote a
-test count or claim a final design pass from the interrupted v1/v2 runs.
+Available tests were run with `$env:PYTHONPATH='engine'; python -m unittest discover -s tests/unit -v`;
+all 54 tests passed. `python -m pytest -q` could not run because `pytest` is not installed in
+the environment. The six-design LTspice evidence is complete at the paths above and received
+independent review with no actionable findings. The historical v1/v2 diagnostic notes do not
+establish a final design pass.
 
 ## Source map
 
@@ -193,8 +216,7 @@ test count or claim a final design pass from the interrupted v1/v2 runs.
   validation, and fail-closed evaluation.
 - `engine/circuitpilot/schematic.py`: ASC rendering, symbol mapping, connectivity manifests,
   and support symbols.
-- `engine/circuitpilot/schematic_validation.py`: native LTspice `.net` compilation and IR
-  pin/value checking.
+- `engine/circuitpilot/schematic_validation.py`: native LTspice `.net` IR pin/value checker.
 - `engine/circuitpilot/schematics_cli.py`: schematic export and ASC-generated netlist
   simulation workflow.
 - `engine/circuitpilot/train_rc_policy.py`: fixed-grid RC measured-table Q-learning
@@ -206,24 +228,23 @@ test count or claim a final design pass from the interrupted v1/v2 runs.
 
 ## Handoff for the next agent
 
-1. Start by reading `AGENTS.md`, this README, `git status`, and the current diff. The
-   baseline commit is `9a09a23`; substantial work remains uncommitted.
+1. Start by reading `AGENTS.md`, this README, `git status`, and the current diff. The synced
+   baseline commit is `26fe3c9`; substantial work remains uncommitted.
 2. Treat `output/analog_examples_v2` and `output/rl_rc_v1` as historical completed evidence.
    Preserve incomplete `production_reference_v1` and `production_reference_v2` folders as
-   diagnostics; do not call them final evidence.
-3. Inspect the current source and confirm the waveform-call fix, idempotent `SIN(...)`
-   rewrite, source-resistance wiring, common-emitter feedback change, requirement
-   validation, and ASC native-netlist integration. Add or repair tests where needed.
-4. Run the authoritative project test suite from this root. Then run the complete CIR suite
-   into a fresh output folder and review all nine recorded scenarios per design.
-5. Run the ASC workflow against the corresponding current CIR reports. Require successful
-   native `.net` compilation, IR connectivity/value match, successful `.net` simulation, and
-   meaningful report comparison for every design.
-6. Update this README with the exact final artifact path, simulator version, per-design
-   results, scenario pass counts, ASC comparison status, and exact test command only after
-   those checks succeed.
-7. Have an independent reviewer examine the resulting source and reports, repair verified
-   issues, rerun affected evidence, and retain `production_qualified: false`.
+   diagnostics only if encountered in another working tree; do not call them final evidence.
+3. Inspect the current source and review requirement validation, nominal source/load wiring,
+   native `.net` checking, reference device models, common-emitter feedback, and the missing
+   transient/corner workflows. Add or repair tests where needed.
+4. Run the authoritative project test suite from this root. The current six-design CIR
+   evidence is in `output/ltspice_26_1_1_cir_20261024`; run a fresh CIR suite if source changes.
+5. The current ASC evidence is in `output/ltspice_26_1_1_asc_complete_20261024`. If source
+   changes, run ASC against matching fresh CIR reports and require native `.net` validation,
+   simulation completion, and report comparisons for all six designs.
+6. After any new simulator run, record exact artifact paths, simulator version, results, and
+   test command here. Preserve `production_qualified: false`.
+7. Independent review of the current implementation and six-design reports is complete with
+   no actionable findings. Repeat review after changes and retain `production_qualified: false`.
 
 The user has requested GPT-6 Luna for implementation and the independent reviewer. Follow
 that preference when available. Push or commit only when the user explicitly requests it.

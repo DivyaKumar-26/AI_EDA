@@ -9,9 +9,11 @@ import math
 from pathlib import Path
 import subprocess
 from typing import Callable
+from decimal import Decimal, InvalidOperation
 
-from .designs import ExampleDesign
+from .designs import EXAMPLE_DESIGNS, ExampleDesign
 from .rawdata import RawPlot, parse_ascii_raw
+from .requirements import evaluate_requirements, validate_spec
 from .simulation import SimulationError, discover_ltspice, run_spice
 
 
@@ -21,10 +23,15 @@ def run_example_design(
     executable: str | None = None,
     timeout_seconds: float = 240.0,
     runner: Callable = subprocess.run,
+    spec: dict | None = None,
 ) -> Path:
     """Generate and simulate one design in a new folder, returning its report path."""
     if not math.isfinite(timeout_seconds) or timeout_seconds <= 0:
         raise ValueError("timeout_seconds must be finite and positive")
+    if spec is not None:
+        spec = validate_spec(spec)
+        if spec["design_id"] != design.design_id:
+            raise ValueError(f"specification design_id {spec['design_id']!r} does not match {design.design_id!r}")
     exe = discover_ltspice(executable)
     root = Path(output_root).expanduser().resolve()
     root.mkdir(parents=True, exist_ok=True)
@@ -39,29 +46,50 @@ def run_example_design(
     with bom_path.open("w", encoding="utf-8-sig", newline="") as bom_file:
         writer = csv.writer(bom_file)
         writer.writerow(("Reference", "Value / model", "Quantity"))
-        writer.writerows(design.bom)
+        writer.writerows(_bom_for_spec(design, spec))
 
     try:
-        batch = run_spice(design.ir, design.design_id, folder, str(exe), timeout_seconds, runner)
+        circuit = _nominal_spec_circuit(design, spec) if spec is not None else design.ir
+        batch = run_spice(circuit, design.design_id, folder, str(exe), timeout_seconds, runner)
         netlist, raw_path, log_path, op_raw_path = batch.netlist_path, batch.raw_path, batch.log_path, batch.op_raw_path
         raw_plot = parse_ascii_raw(raw_path.read_text(encoding="ascii", errors="replace"))
         op_plot = parse_ascii_raw(op_raw_path.read_text(encoding="ascii", errors="replace")) if op_raw_path.is_file() else None
+        nominal_supply_v = spec["operating_conditions"]["nominal_supply_v"] if spec is not None else None
         if design.measurement_kind.endswith("amplifier"):
-            measurements = _amplifier_measurements(design, raw_plot, op_plot)
+            measurements = _amplifier_measurements(design, raw_plot, op_plot, nominal_supply_v)
         else:
-            measurements = _bias_measurements(design, raw_plot)
+            measurements = _bias_measurements(design, raw_plot, nominal_supply_v)
+        requirement_evaluation = evaluate_requirements(spec, measurements) if spec is not None else None
+        condition_coverage = _condition_coverage(spec, measurements) if spec is not None else None
+        design_pass = bool(measurements.get("topology_checks_pass", False))
+        if requirement_evaluation is not None:
+            design_pass = design_pass and requirement_evaluation["status"] == "passed" and condition_coverage["complete"]
+        verification_status = "measured_with_topology_checks"
+        if requirement_evaluation is not None:
+            if requirement_evaluation["status"] != "passed":
+                verification_status = "requirements_failed"
+            elif not condition_coverage["complete"]:
+                verification_status = "requirements_passed_conditions_incomplete"
+            elif not measurements.get("topology_checks_pass", False):
+                verification_status = "topology_checks_failed"
+            else:
+                verification_status = "requirements_passed"
         report = {
             "design_id": design.design_id,
             "title": design.title,
             "topology": design.topology,
             "description": design.description,
             "simulation_status": "completed",
-            "verification_status": "measured_with_topology_checks",
-            "design_pass": bool(measurements.get("topology_checks_pass", False)),
+            "verification_status": verification_status,
+            "design_pass": design_pass,
+            "design_basis": "user_requirements" if spec is not None else "reference_design_defaults",
+            "production_qualified": False,
             "simulator": {"name": "LTspice", "executable": batch.simulator_executable, "mode": "batch"},
             "analysis": design.analysis,
             "artifacts": {"netlist": netlist.name, "bom": bom_path.name, "raw": raw_path.name, "log": log_path.name},
             "measurements": measurements,
+            "requirements_evaluation": requirement_evaluation,
+            "operating_conditions_verification": condition_coverage,
             "model_limitations": _limitations(design),
             "verification_note": "design_pass covers only the documented operating-region checks, not a product-level performance specification.",
         }
@@ -79,10 +107,167 @@ def run_example_design(
         "simulation_status": "failed",
         "verification_status": "not_evaluated",
         "design_pass": False,
+        "design_basis": "user_requirements" if spec is not None else "reference_design_defaults",
+        "production_qualified": False,
+        "operating_conditions_verification": _condition_coverage(spec) if spec is not None else None,
         "error": error,
         "artifacts": {"netlist": netlist.name, "bom": bom_path.name},
     }, indent=2) + "\n", encoding="utf-8")
     raise SimulationError(error)
+
+
+def _nominal_spec_circuit(design: ExampleDesign, spec: dict):
+    """Apply the nominal supply, source resistance, and load to the canonical IR.
+
+    Temperature/tolerance corners and transient amplitude checks are reported as
+    unverified until their simulation paths are available.
+    """
+    from .ir import CircuitElement, CircuitIR
+
+    conditions = spec["operating_conditions"]
+    if design.topology != "amplifier":
+        if conditions["source_resistance_ohm"] not in (None, 0):
+            raise ValueError("source_resistance_ohm is unsupported for bias-network designs")
+        if conditions["load_resistance_ohm"] is not None:
+            raise ValueError("load_resistance_ohm is unsupported for bias-network designs")
+    expected_mode = "dual" if design.measurement_kind == "opamp_amplifier" else "single"
+    if conditions["supply_mode"] != expected_mode:
+        raise ValueError(f"{design.design_id} requires supply_mode={expected_mode!r}")
+    if "__cp_source" in {net.casefold() for net in design.ir.nets}:
+        raise ValueError("design uses reserved CircuitPilot source net __cp_source")
+    if any(element.reference.casefold() == "rcp_source" for element in design.ir.elements):
+        raise ValueError("design already contains reserved component RCP_SOURCE")
+    elements = []
+    supply_names = {"VDD", "VCC"}
+    source_found = False
+    for element in design.ir.elements:
+        ref = element.reference.upper()
+        body = element.body
+        nodes = element.nodes
+        if ref == "VIN":
+            source_found = True
+            if conditions["source_resistance_ohm"] is not None and conditions["source_resistance_ohm"] > 0:
+                nodes = ("__cp_source", *nodes[1:])
+        if ref in supply_names and design.measurement_kind in {"mosfet_amplifier", "bjt_amplifier", "mosfet_bias", "bjt_bias"}:
+            body = f"{conditions['nominal_supply_v']:g}"
+        elements.append(CircuitElement(element.reference, nodes, body))
+    if not source_found and conditions["source_resistance_ohm"] not in (None, 0):
+        raise ValueError("cannot apply source resistance: design has no VIN source")
+    if conditions["source_resistance_ohm"] is not None and conditions["source_resistance_ohm"] > 0:
+        elements.append(CircuitElement.from_statement(f"RCP_SOURCE __cp_source in {conditions['source_resistance_ohm']:g}"))
+    if conditions["load_resistance_ohm"] is not None:
+        if any(element.reference.casefold() == "rcp_load" for element in elements):
+            raise ValueError("design already contains reserved component RCP_LOAD")
+        elements.append(CircuitElement.from_statement(f"RCP_LOAD out 0 {conditions['load_resistance_ohm']:g}"))
+    directives = design.ir.directives
+    if design.measurement_kind in {"mosfet_bias", "bjt_bias"}:
+        directives = _dc_sweep_with_requested_supply(directives, "VDD" if design.measurement_kind == "mosfet_bias" else "VCC",
+                                                     conditions["nominal_supply_v"])
+    return CircuitIR(design.ir.title, tuple(elements), design.ir.models, design.ir.subcircuits,
+                     directives, design.ir.comments)
+
+
+def _dc_sweep_with_requested_supply(directives: tuple[str, ...], source_name: str, nominal_supply_v: float) -> tuple[str, ...]:
+    """Retain the reference DC sweep grid and add the requested supply exactly."""
+    updated = list(directives)
+    for index, directive in enumerate(directives):
+        tokens = directive.split()
+        if len(tokens) != 5 or tokens[0].casefold() != ".dc" or tokens[1].casefold() != source_name.casefold():
+            continue
+        try:
+            start, stop, step = (Decimal(token) for token in tokens[2:])
+            requested = Decimal(str(nominal_supply_v))
+        except InvalidOperation as exc:
+            raise ValueError(f"cannot adapt unsupported DC sweep directive: {directive}") from exc
+        if step <= 0 or stop < start:
+            raise ValueError(f"cannot adapt invalid DC sweep directive: {directive}")
+        low, high = min(start, requested), max(stop, requested)
+        offset = abs(requested - start)
+        refined_step = _decimal_gcd(step, offset) if offset else step
+        if refined_step <= 0:
+            raise ValueError("requested supply does not produce a positive DC sweep step")
+        point_count = int((high - low) / refined_step) + 1
+        if point_count > 10001:
+            raise ValueError(f"requested supply requires {point_count} DC points; maximum is 10001")
+        updated[index] = f".dc {tokens[1]} {_decimal_text(low)} {_decimal_text(high)} {_decimal_text(refined_step)}"
+        return tuple(updated)
+    raise ValueError(f"bias design has no supported .dc sweep for {source_name}")
+
+
+def _decimal_gcd(left: Decimal, right: Decimal) -> Decimal:
+    places = max(-left.as_tuple().exponent, -right.as_tuple().exponent, 0)
+    factor = 10 ** places
+    a, b = int(left * factor), int(right * factor)
+    while b:
+        a, b = b, a % b
+    return Decimal(a) / factor
+
+
+def _decimal_text(value: Decimal) -> str:
+    return format(value.normalize(), "f")
+
+
+def _condition_coverage(spec: dict, measurements: dict | None = None) -> dict:
+    conditions = spec["operating_conditions"]
+    design = EXAMPLE_DESIGNS[spec["design_id"]]
+    applied = []
+    if design.measurement_kind != "opamp_amplifier":
+        applied.append("nominal_supply_v")
+    if design.topology == "amplifier":
+        if conditions["source_resistance_ohm"] is not None and conditions["source_resistance_ohm"] > 0:
+            applied.append("source_resistance_ohm")
+        if conditions["load_resistance_ohm"] is not None:
+            applied.append("load_resistance_ohm")
+    unverified = ["ambient_temperature_c"]
+    if conditions["supply_tolerance_percent"] > 0:
+        unverified.append("supply_tolerance_percent")
+    if conditions["resistor_tolerance_percent"] > 0:
+        unverified.append("resistor_tolerance_percent")
+    if conditions["capacitor_tolerance_percent"] > 0:
+        unverified.append("capacitor_tolerance_percent")
+    if conditions["input_amplitude_v"] is not None or conditions["input_frequency_hz"] is not None:
+        unverified.extend(("input_amplitude_v", "input_frequency_hz"))
+    if conditions["maximum_output_peak_v"] is not None:
+        unverified.append("maximum_output_peak_v")
+    if conditions["maximum_thd_percent"] is not None:
+        unverified.append("maximum_thd_percent")
+    if design.measurement_kind == "opamp_amplifier":
+        unverified.append("nominal_supply_v (op-amp macro has no supply pins)")
+    requested_supply = conditions["nominal_supply_v"]
+    if design.measurement_kind in {"mosfet_bias", "bjt_bias"}:
+        measured_supply = measurements.get("nominal_supply_v") if isinstance(measurements, dict) else None
+    elif design.measurement_kind in {"mosfet_amplifier", "bjt_amplifier"}:
+        bias = measurements.get("bias", {}) if isinstance(measurements, dict) else {}
+        measured_supply = bias.get("supply_v") if isinstance(bias, dict) else None
+    else:
+        measured_supply = None
+    exact_supply_measured = (isinstance(measured_supply, (int, float)) and
+                             math.isclose(measured_supply, requested_supply, rel_tol=1e-9, abs_tol=1e-9))
+    if design.measurement_kind != "opamp_amplifier" and not exact_supply_measured:
+        unverified.append("nominal_supply_v evidence missing")
+    return {
+        "status": "nominal_only",
+        "complete": not unverified,
+        "applied": applied,
+        "unverified": unverified,
+        "requested_nominal_supply_v": requested_supply,
+        "measured_nominal_supply_v": measured_supply,
+        "nominal_supply_status": "confirmed_exact" if exact_supply_measured else "not_confirmed",
+        "note": "The transistor nominal supply is applied and must be present exactly in the measured DC or operating-point data. Supply/temperature/component corners and transient requirements remain unverified.",
+    }
+
+
+def _bom_for_spec(design: ExampleDesign, spec: dict | None) -> tuple[tuple[str, str, str], ...]:
+    rows = list(design.bom)
+    if spec is None:
+        return tuple(rows)
+    conditions = spec["operating_conditions"]
+    if design.topology == "amplifier":
+        if conditions["source_resistance_ohm"] is not None and conditions["source_resistance_ohm"] > 0:
+            rows.append(("RCP_SOURCE", f"{conditions['source_resistance_ohm']:g} Ω, user requirement", "1"))
+        if conditions["load_resistance_ohm"] is not None:
+            rows.append(("RCP_LOAD", f"{conditions['load_resistance_ohm']:g} Ω, user requirement", "1"))
+    return tuple(rows)
 
 
 def _limitations(design: ExampleDesign) -> list[str]:
@@ -133,7 +318,10 @@ def _interp_crossing(left: tuple[float, complex, float], right: tuple[float, com
     return math.exp(math.log(f1) + fraction * (math.log(f2) - math.log(f1)))
 
 
-def _amplifier_measurements(design: ExampleDesign, ac_plot: RawPlot, op_plot: RawPlot | None) -> dict:
+def _amplifier_measurements(
+    design: ExampleDesign, ac_plot: RawPlot, op_plot: RawPlot | None,
+    nominal_supply_v: float | None = None,
+) -> dict:
     curve = _amp_curve(ac_plot)
     peak_index = max(range(len(curve)), key=lambda index: curve[index][2])
     peak = curve[peak_index]
@@ -161,19 +349,23 @@ def _amplifier_measurements(design: ExampleDesign, ac_plot: RawPlot, op_plot: Ra
         vg, vs, vd = _node(op_plot, "gate"), _node(op_plot, "source"), _node(op_plot, "out")
         vgs, vds = vg - vs, vd - vs
         current = vs / 470.0
+        applied_supply = design.supply_voltage if nominal_supply_v is None else nominal_supply_v
         checks = {"positive_drain_current": current > 0, "vgs_above_model_threshold": vgs > design.mos_threshold,
                   "mosfet_not_in_cutoff_or_triode": vds > max(0.2, vgs - design.mos_threshold)}
         measurements.update({"operating_point_v": {"gate": vg, "source": vs, "drain": vd},
-                             "bias": {"vgs_v": vgs, "vds_v": vds, "drain_current_a_estimate": current},
+                             "bias": {"vgs_v": vgs, "vds_v": vds, "drain_current_a_estimate": current,
+                                      "supply_v": applied_supply},
                              "topology_checks": checks})
     elif design.measurement_kind == "bjt_amplifier":
         vb, ve, vc = _node(op_plot, "base"), _node(op_plot, "emitter"), _node(op_plot, "out")
         vbe, vce = vb - ve, vc - ve
-        current = (design.supply_voltage - vc) / 4700.0
+        applied_supply = design.supply_voltage if nominal_supply_v is None else nominal_supply_v
+        current = (applied_supply - vc) / 4700.0
         checks = {"positive_collector_current": current > 0, "forward_biased_base_emitter": 0.55 <= vbe <= 0.9,
                   "not_saturated": vce > 0.2}
         measurements.update({"operating_point_v": {"base": vb, "emitter": ve, "collector": vc},
-                             "bias": {"vbe_v": vbe, "vce_v": vce, "collector_current_a_estimate": current},
+                             "bias": {"vbe_v": vbe, "vce_v": vce, "collector_current_a_estimate": current,
+                                      "supply_v": applied_supply},
                              "topology_checks": checks})
     elif op_plot is not None:
         measurements["operating_point_v"] = {"input": _node(op_plot, "in"), "output": _node(op_plot, "out")}
@@ -190,14 +382,20 @@ def _amplifier_measurements(design: ExampleDesign, ac_plot: RawPlot, op_plot: Ra
     return measurements
 
 
-def _bias_measurements(design: ExampleDesign, dc_plot: RawPlot) -> dict:
+def _bias_measurements(design: ExampleDesign, dc_plot: RawPlot, nominal_supply_v: float | None = None) -> dict:
     if "dc" not in dc_plot.plot_name.casefold():
         raise SimulationError(f"Expected DC sweep raw data, found {dc_plot.plot_name}")
     supply_key = "v(vdd)" if design.measurement_kind == "mosfet_bias" else "v(vcc)"
     supply_values = [point.get(supply_key) for point in dc_plot.points]
     if any(value is None for value in supply_values):
         raise SimulationError(f"DC raw data does not contain swept supply {supply_key}")
-    nominal_point = min(dc_plot.points, key=lambda point: abs(point[supply_key].real - design.supply_voltage))
+    requested_supply = design.supply_voltage if nominal_supply_v is None else nominal_supply_v
+    nominal_points = [point for point in dc_plot.points
+                      if math.isclose(point[supply_key].real, requested_supply, rel_tol=1e-9, abs_tol=1e-9)]
+    if not nominal_points:
+        raise SimulationError(f"DC sweep does not contain the requested nominal supply {requested_supply:g} V")
+    nominal_point = nominal_points[0]
+    measured_nominal_supply = nominal_point[supply_key].real
     sweep = []
     for point in dc_plot.points:
         supply = point[supply_key].real
@@ -225,7 +423,7 @@ def _bias_measurements(design: ExampleDesign, dc_plot: RawPlot) -> dict:
         bias = {"vgs_v": vgs, "vds_v": vds, "drain_current_a_estimate": current}
     else:
         vb, ve, vc = (nominal_point[key].real for key in ("v(base)", "v(emitter)", "v(collector)"))
-        vbe, vce, current = vb - ve, vc - ve, (design.supply_voltage - vc) / 4700.0
+        vbe, vce, current = vb - ve, vc - ve, (measured_nominal_supply - vc) / 4700.0
         checks = {"positive_collector_current": current > 0, "forward_biased_base_emitter": 0.55 <= vbe <= 0.9,
                   "bjt_not_saturated": vce > 0.2}
         bias = {"vbe_v": vbe, "vce_v": vce, "collector_current_a_estimate": current}
@@ -236,7 +434,7 @@ def _bias_measurements(design: ExampleDesign, dc_plot: RawPlot) -> dict:
         "sweep_points": len(sweep),
         "sweep_supply_min_v": min(sample["supply_v"] for sample in sweep),
         "sweep_supply_max_v": max(sample["supply_v"] for sample in sweep),
-        "nominal_supply_v": nominal_point[supply_key].real,
+        "nominal_supply_v": measured_nominal_supply,
         "nominal_bias": bias,
         "sweep_summary": {"active_region_points": sum(sample["active_region"] for sample in sweep),
                           "total_points": len(sweep), "min_current_a": min(sample.get("drain_current_a_estimate", sample.get("collector_current_a_estimate")) for sample in sweep),
