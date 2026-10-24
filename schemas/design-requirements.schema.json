@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CircuitPilot design requirements v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "design_id", "operating_conditions", "requirements"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "design_id": {"type": "string"},
+    "operating_conditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supply_mode", "nominal_supply_v", "supply_tolerance_percent", "ambient_temperature_c", "resistor_tolerance_percent", "capacitor_tolerance_percent", "load_resistance_ohm", "source_resistance_ohm", "input_amplitude_v", "input_frequency_hz", "maximum_output_peak_v", "maximum_thd_percent"],
+      "properties": {
+        "supply_mode": {"enum": ["single", "dual"]},
+        "nominal_supply_v": {"type": "number", "exclusiveMinimum": 0},
+        "supply_tolerance_percent": {"type": "number", "minimum": 0, "exclusiveMaximum": 100},
+        "ambient_temperature_c": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number", "minimum": 0, "maximum": 70}},
+        "resistor_tolerance_percent": {"type": "number", "minimum": 0, "exclusiveMaximum": 100},
+        "capacitor_tolerance_percent": {"type": "number", "minimum": 0, "exclusiveMaximum": 100},
+        "load_resistance_ohm": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "source_resistance_ohm": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "input_amplitude_v": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "input_frequency_hz": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "maximum_output_peak_v": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "maximum_thd_percent": {"type": ["number", "null"], "minimum": 0, "maximum": 100}
+      }
+    },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["metric", "unit", "min", "max"],
+        "properties": {
+          "metric": {"type": "string"},
+          "unit": {"type": "string"},
+          "min": {"type": "number"},
+          "max": {"type": "number"}
+        }
+      }
+    }
+  }
+}

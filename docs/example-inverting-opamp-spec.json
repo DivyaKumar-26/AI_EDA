@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "design_id": "inverting-opamp-amplifier",
+  "operating_conditions": {
+    "supply_mode": "dual",
+    "nominal_supply_v": 15.0,
+    "supply_tolerance_percent": 10.0,
+    "ambient_temperature_c": [0.0, 27.0, 70.0],
+    "resistor_tolerance_percent": 1.0,
+    "capacitor_tolerance_percent": 10.0,
+    "load_resistance_ohm": 10000.0,
+    "source_resistance_ohm": 50.0,
+    "input_amplitude_v": 0.01,
+    "input_frequency_hz": 1000.0,
+    "maximum_output_peak_v": 10.0,
+    "maximum_thd_percent": 5.0
+  },
+  "requirements": [
+    {
+      "metric": "gain_at_1khz_magnitude_v_per_v",
+      "unit": "V/V",
+      "min": 9.5,
+      "max": 10.5
+    },
+    {
+      "metric": "minus_3db_high_cutoff_hz",
+      "unit": "Hz",
+      "min": 20000.0,
+      "max": 120000.0
+    }
+  ]
+}
