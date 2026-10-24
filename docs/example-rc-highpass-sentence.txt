@@ -1,0 +1,1 @@
+Design an RC high-pass filter with cutoff from 1.5 kHz to 1.7 kHz, resistance from 1 kOhm to 10 kOhm using E12, and capacitance from 50 nF to 150 nF using E12.

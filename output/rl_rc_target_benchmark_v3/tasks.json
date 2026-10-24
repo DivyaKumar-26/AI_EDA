@@ -1,0 +1,100 @@
+{
+  "held_out_targets_disjoint_from_training": true,
+  "held_out_tasks": [
+    {
+      "cutoff_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723"
+    },
+    {
+      "cutoff_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061"
+    },
+    {
+      "cutoff_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064"
+    },
+    {
+      "cutoff_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257"
+    },
+    {
+      "cutoff_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340"
+    }
+  ],
+  "start_states_per_task": [
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      0
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      2,
+      2
+    ]
+  ],
+  "training_tasks": [
+    {
+      "target_hz": 482.259522972956,
+      "task_id": "train_low",
+      "tolerance_percent": 1.0
+    },
+    {
+      "target_hz": 1591.4870757015626,
+      "task_id": "train_mid",
+      "tolerance_percent": 1.0
+    },
+    {
+      "target_hz": 3386.25088192633,
+      "task_id": "train_high",
+      "tolerance_percent": 1.0
+    },
+    {
+      "target_hz": 4979.550041232938,
+      "task_id": "train_upper",
+      "tolerance_percent": 1.0
+    }
+  ]
+}

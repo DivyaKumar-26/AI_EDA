@@ -1,6 +1,6 @@
 # Design requirements template
 
-Use this template to make the design target explicit before simulation. This project currently accepts only the six `design_id` values listed below; it does not infer requirements from prose. The machine-readable format is validated by the engine and defined in [`schemas/design-requirements.schema.json`](../schemas/design-requirements.schema.json).
+Use this template to make the design target explicit before simulation. This measurement-requirements workflow accepts only the six `design_id` values listed below; it does not infer requirements from prose. A separate bounded behavioral prompt grammar is documented in [`plain-language-request.md`](plain-language-request.md). The machine-readable format is validated by the engine and defined in [`schemas/design-requirements.schema.json`](../schemas/design-requirements.schema.json).
 
 ## Fill-in checklist
 
@@ -12,7 +12,7 @@ Use this template to make the design target explicit before simulation. This pro
 
 ## Copy/paste request prompt
 
-Fill every field you know. Leave unknown fields as `[unknown]`; do not invent a value. This prompt is a requirements-gathering aid only. CircuitPilot does not parse natural-language requests yet. Translate the completed answers into the validated JSON format below before running a design.
+Fill every field you know. Leave unknown fields as `[unknown]`; do not invent a value. This measurement-requirements prompt is a gathering aid and is not parsed by that workflow. Separately, the behavioral CLI accepts a bounded sentence grammar for its current RC/RL filter, buffered RC, series RLC, and inverting op-amp request topologies, plus the legacy labeled RC low-pass form. General prose remains unsupported. Translate the completed answers into the validated JSON format below before running a design.
 
 ```text
 Design request

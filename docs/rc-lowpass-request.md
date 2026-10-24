@@ -171,13 +171,13 @@ python -m circuitpilot.design_request_cli --request docs/example-series-rlc-band
 The saved successful RC low-pass run at `output/rc_behavior_request_20261024_run2` remains the
 low-pass LTspice evidence. A new low-pass invocation in
 `output/hackathon_rc_lowpass_smoke_20261024_retry` timed out after 120 seconds with no raw/log.
-The experimental series RLC smoke was attempted once with a 25-second limit:
+The initial experimental series RLC smoke used a 25-second limit:
 
 ```powershell
 python -m circuitpilot.design_request_cli --request docs/example-series-rlc-bandpass-request.json --simulate --output-dir output/hackathon_series_rlc_smoke_20261024 --ltspice D:\LTspice\LTspice.exe --timeout 25
 ```
 
-It timed out without raw or log data; the request report failed closed with no measured peak. This is a timeout diagnostic, not simulator evidence.
+It timed out without raw or log data; the request report failed closed with no measured peak. This is a preserved timeout diagnostic, superseded by the later successful RLC smoke below.
 
 The initial buffered RC low-pass smoke used a 25-second limit and timed out without raw/log
 data; `output/hackathon_opamp_rc_lowpass_smoke_20261024` is retained as a failed diagnostic.
@@ -197,6 +197,12 @@ run completed 701 AC points and measured 9.998896080913909 V/V at 1 kHz. The req
 V/V range passed; `design.log` is saved in that folder. This is nominal smoke verification only,
 and `production_qualified` remains `false`.
 
+Later RC high-pass, RL low-pass, and experimental series RLC smoke checks completed with 201 AC
+points each. The RC high-pass report measured 1591.5494309188985 Hz (expected 1591.5494309189537
+Hz); the RL low-pass report measured 1591.5510043559714 Hz (expected 1591.5494309189535 Hz); and
+the RLC report measured 1591.5494309189535 Hz (matching expected resonance). Each passed the
+inclusive 1500–1700 Hz requested range. Reports: [RC high-pass](../output/hackathon_rc_highpass_verify_20261025/request-verification.json), [RL low-pass](../output/hackathon_rl_lowpass_verify_20261025/request-verification.json), [series RLC](../output/hackathon_series_rlc_verify_20261025/request-verification.json). Earlier timeout folders are superseded diagnostics. These are nominal smoke checks, not production qualification; all reports keep `production_qualified: false`.
+
 The new topology smoke commands were:
 
 ```powershell
@@ -204,10 +210,10 @@ python -m circuitpilot.design_request_cli --request docs/example-rc-highpass-req
 python -m circuitpilot.design_request_cli --request docs/example-rl-lowpass-request.json --simulate --output-dir output/hackathon_rl_lowpass_smoke_20261024_retry --ltspice D:\LTspice\LTspice.exe --timeout 20
 ```
 
-Both new topology runs timed out without raw/log output. Treat those folders as failed
-diagnostics; real LTspice results for RC high-pass and RL low-pass remain outstanding. Unit
-coverage verifies their analytical cutoffs and circuit wiring, and exercises the high-pass
-ascending cutoff measurement with AC fixture data. These attempts do not change the
+Both listed new-topology attempts timed out without raw/log output and are preserved diagnostics.
+They have since been superseded by the successful RC high-pass and RL low-pass reports above.
+Unit coverage verifies their analytical cutoffs and circuit wiring, and exercises the high-pass
+ascending cutoff measurement with AC fixture data. These nominal results do not change the
 `production_qualified: false` status.
 
 ## Bounded conventional refinement

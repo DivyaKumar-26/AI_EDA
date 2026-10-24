@@ -1,0 +1,43 @@
+{
+  "acceptance_evidence": "saved LTspice measured_cutoff_hz only; analytical cutoff is used only for conventional ranking",
+  "actions": [
+    "R_UP",
+    "R_DOWN",
+    "C_UP",
+    "C_DOWN"
+  ],
+  "algorithm": "tabular Q-learning with epsilon-greedy exploration",
+  "alpha": 0.25,
+  "epsilon_decay": 0.997,
+  "epsilon_min": 0.05,
+  "epsilon_start": 1.0,
+  "evaluation_candidate_measurement_budget_per_episode": 3,
+  "gamma": 0.9,
+  "reward": "absolute log-error improvement - 0.02 per measured-table step +1.0 on training target within 1%",
+  "seed": 20261025,
+  "state": "R index, C index, and target-relative measured-cutoff error band",
+  "training_allowed_target_intervals_hz": [
+    [
+      482.259522972956,
+      685.7142857142857
+    ],
+    [
+      766.5,
+      1008.5714285714286
+    ],
+    [
+      1118.25,
+      2147.6190476190477
+    ],
+    [
+      2460.15,
+      4979.550041232938
+    ]
+  ],
+  "training_episodes": 12000,
+  "training_max_steps": 8,
+  "training_target_distribution": "seeded log-uniform over the measured cutoff span excluding held-out ranges expanded by a multiplicative guard fraction",
+  "training_target_generation_seed_salt": 1380142160,
+  "training_target_guard_fraction": 0.05,
+  "training_tolerance_percent": 1.0
+}

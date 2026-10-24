@@ -1,0 +1,3854 @@
+{
+  "conventional_analytical_ranking": [
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 723.4315595086151,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 1.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 723.4315595086151,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 1.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 723.4315595086151,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 1.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 723.4315595086151,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 1.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 723.4315595086151,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 1.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 723.4315595086151,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 1.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 723.4315595086151,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 1.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 723.4315595086151,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 1.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 723.4315595086151,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 1.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1061.032953945969,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1061.032953945969,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1061.032953945969,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1061.032953945969,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1061.032953945969,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1061.032953945969,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1061.032953945969,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1061.032953945969,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1061.032953945969,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1063.8699404538459,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1063.8699404538459,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1063.8699404538459,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1063.8699404538459,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1063.8699404538459,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1063.8699404538459,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1063.8699404538459,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1063.8699404538459,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 1063.8699404538459,
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2257.516923289296,
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2257.516923289296,
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2257.516923289296,
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2257.516923289296,
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2257.516923289296,
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2257.516923289296,
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2257.516923289296,
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2257.516923289296,
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2257.516923289296,
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2340.513868998461,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2340.513868998461,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2340.513868998461,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2340.513868998461,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2340.513868998461,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2340.513868998461,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2340.513868998461,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2340.513868998461,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 1.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "ANALYTICAL_RANK_1",
+          "analytical_cutoff_hz": 2340.513868998461,
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 1.0
+    }
+  ],
+  "rl_policy": [
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 4979.550041232938,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.7349861971926279,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.7684972548224392,
+          "state": [
+            0,
+            2
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        0,
+        0
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.5034834520150673
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.7684972548224392,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 1.3613063965795942,
+          "state": [
+            1,
+            2
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        0,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 2.1298036514020335
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 1.3613063965795942,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 2,
+      "start_state": [
+        0,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.3613063965795942
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 3386.25088192633,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.38551898334842916,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.735026445945564,
+          "state": [
+            2,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        1,
+        0
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.1205454292939931
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1591.4870757015626,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 1.7641191616848817,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 2,
+      "start_state": [
+        1,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 1.7641191616848817
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": true,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 0
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        1,
+        2
+      ],
+      "stop_reason": "measured_pass_at_start",
+      "success": true,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 0.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.735026445945564,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": -0.02,
+          "state": [
+            2,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        2,
+        0
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": 0.715026445945564
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": -0.02,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": -0.02,
+          "state": [
+            2,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        2,
+        1
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": -0.04
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 482.259522972956,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.006880123049928761,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": -0.02,
+          "state": [
+            2,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        2,
+        2
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 724.9827584156748,
+      "target_range_hz": [
+        720.0,
+        730.0
+      ],
+      "task_id": "heldout_723",
+      "total_reward": -0.01311987695007124
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 4979.550041232938,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.7349861971926283,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.7684972548224392,
+          "state": [
+            0,
+            2
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        0,
+        0
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 1.5034834520150675
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.7684972548224392,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.3993874046711587,
+          "state": [
+            1,
+            2
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        0,
+        1
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 0.36910985015128056
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.3993874046711587,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.35938740467115865,
+          "state": [
+            0,
+            2
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        0,
+        2
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": -0.040000000000000036
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 3386.25088192633,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.38551898334842916,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.735026445945564,
+          "state": [
+            2,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        1,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 2.120545429293993
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1591.4870757015626,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0034253604341289608,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.35938740467115865,
+          "state": [
+            0,
+            2
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        1,
+        1
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 0.3628127651052876
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.35938740467115865,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.3993874046711587,
+          "state": [
+            1,
+            2
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        1,
+        2
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": -0.040000000000000036
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.735026445945564,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 2,
+      "start_state": [
+        2,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 1.735026445945564
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 0
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        1
+      ],
+      "stop_reason": "measured_pass_at_start",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 0.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 482.259522972956,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.7675739243006814,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 2,
+      "start_state": [
+        2,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1060.4989391791023,
+      "target_range_hz": [
+        1059.0,
+        1062.0
+      ],
+      "task_id": "heldout_1061",
+      "total_reward": 1.7675739243006814
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 4979.550041232938,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.7349861971926281,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.7681395198478893,
+          "state": [
+            0,
+            2
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        0,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 2.5031257170405175
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.7681395198478893,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 2,
+      "start_state": [
+        0,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.7681395198478893
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 0
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        2
+      ],
+      "stop_reason": "measured_pass_at_start",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 0.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 3386.25088192633,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.38551898334842905,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.7293124385573683,
+          "state": [
+            2,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        1,
+        0
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.1148314219057973
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1591.4870757015626,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.003165548648051946,
+          "state": [
+            1,
+            2
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.3656205787787896,
+          "state": [
+            0,
+            2
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        1,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.3624550301307377
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.3656205787787896,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 2,
+      "start_state": [
+        1,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 1.3656205787787896
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.7293124385573683,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": -0.02,
+          "state": [
+            2,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        2,
+        0
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 0.7093124385573683
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": -0.02,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": -0.02,
+          "state": [
+            2,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        2,
+        1
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": -0.04
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 482.259522972956,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.7684508259946666,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": -0.02,
+          "state": [
+            2,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        2,
+        2
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 1063.9995300750838,
+      "target_range_hz": [
+        1063.0,
+        1065.0
+      ],
+      "task_id": "heldout_1064",
+      "total_reward": 0.7484508259946666
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 4979.550041232938,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.734986197192628,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1591.4870757015626,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.33349260276446047,
+          "state": [
+            1,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        0,
+        0
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 0.40149359442816757
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1591.4870757015626,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.33349260276446047,
+          "state": [
+            1,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 3386.25088192633,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.07587743550027042,
+          "state": [
+            1,
+            0
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        0,
+        1
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": -0.4093700382647309
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.6963053678697482,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1591.4870757015626,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.33349260276446047,
+          "state": [
+            1,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        0,
+        2
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 0.3628127651052877
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 3386.25088192633,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.3854129801337238,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 2,
+      "start_state": [
+        1,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.3854129801337238
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1591.4870757015626,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 3386.25088192633,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.07587743550027042,
+          "state": [
+            1,
+            0
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 1.3854129801337238,
+          "state": [
+            2,
+            0
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        1,
+        1
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.3095355446334533
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.3656205787787895,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.6963053678697482,
+          "state": [
+            0,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        1,
+        2
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.0619259466485378
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": true,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 0
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        2,
+        0
+      ],
+      "stop_reason": "measured_pass_at_start",
+      "success": true,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 0.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1591.4870757015626,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.3854909013121105,
+          "state": [
+            1,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 3386.25088192633,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.07587743550027042,
+          "state": [
+            1,
+            0
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        2,
+        1
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 0.30961346581184007
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 482.259522972956,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.7684508259946667,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1591.4870757015626,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.3854909013121105,
+          "state": [
+            1,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        2,
+        2
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 2257.4986157249355,
+      "target_range_hz": [
+        2255.0,
+        2260.0
+      ],
+      "task_id": "heldout_2257",
+      "total_reward": 1.1539417273067771
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 4979.550041232938,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_UP",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.73496484780862,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 2,
+      "start_state": [
+        0,
+        0
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 1.73496484780862
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            1
+          ],
+          "step": 0
+        }
+      ],
+      "budget": 3,
+      "budget_used": 1,
+      "start_state": [
+        0,
+        1
+      ],
+      "stop_reason": "measured_pass_at_start",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 0.0
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.0,
+          "state": [
+            0,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.7684972548224391,
+          "state": [
+            0,
+            1
+          ],
+          "step": 1
+        }
+      ],
+      "budget": 3,
+      "budget_used": 2,
+      "start_state": [
+        0,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 1.7684972548224391
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 3386.25088192633,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.31319974379702453,
+          "state": [
+            2,
+            0
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 3386.25088192633,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.35319974379702457,
+          "state": [
+            1,
+            0
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        1,
+        0
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": -0.040000000000000036
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1591.4870757015626,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 3386.25088192633,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.003664199163571174,
+          "state": [
+            1,
+            0
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.31319974379702453,
+          "state": [
+            2,
+            0
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        1,
+        1
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 0.30953554463345334
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 723.4205900356251,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.0,
+          "state": [
+            1,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 1063.8092321722388,
+          "measured_pass": false,
+          "resistance_ohm": 680.0,
+          "reward": 0.3656205787787896,
+          "state": [
+            0,
+            2
+          ],
+          "step": 1
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 2340.473680845795,
+          "measured_pass": true,
+          "resistance_ohm": 680.0,
+          "reward": 1.7684972548224391,
+          "state": [
+            0,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        1,
+        2
+      ],
+      "stop_reason": "measured_pass",
+      "success": true,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 2.1341178336012288
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            0
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 3386.25088192633,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.35319974379702457,
+          "state": [
+            1,
+            0
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_UP",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 2257.3789678404987,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.31319974379702453,
+          "state": [
+            2,
+            0
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        2,
+        0
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": -0.040000000000000036
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            1
+          ],
+          "step": 0
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1591.4870757015626,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.38549090131211056,
+          "state": [
+            1,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 4.7e-08,
+          "measured_cutoff_hz": 3386.25088192633,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": -0.003664199163571174,
+          "state": [
+            1,
+            0
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        2,
+        1
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 0.38182670214853937
+    },
+    {
+      "attempts": [
+        {
+          "action": "START",
+          "capacitance_f": 2.2e-07,
+          "measured_cutoff_hz": 482.259522972956,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.0,
+          "state": [
+            2,
+            2
+          ],
+          "step": 0
+        },
+        {
+          "action": "C_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1060.9640177868243,
+          "measured_pass": false,
+          "resistance_ohm": 1500.0,
+          "reward": 0.7684508259946664,
+          "state": [
+            2,
+            1
+          ],
+          "step": 1
+        },
+        {
+          "action": "R_DOWN",
+          "capacitance_f": 1e-07,
+          "measured_cutoff_hz": 1591.4870757015626,
+          "measured_pass": false,
+          "resistance_ohm": 1000.0,
+          "reward": 0.38549090131211056,
+          "state": [
+            1,
+            1
+          ],
+          "step": 2
+        }
+      ],
+      "budget": 3,
+      "budget_used": 3,
+      "start_state": [
+        2,
+        2
+      ],
+      "stop_reason": "budget_exhausted",
+      "success": false,
+      "target_hz": 2340.4986648148297,
+      "target_range_hz": [
+        2338.0,
+        2343.0
+      ],
+      "task_id": "heldout_2340",
+      "total_reward": 1.153941727306777
+    }
+  ]
+}

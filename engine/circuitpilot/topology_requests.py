@@ -50,9 +50,14 @@ def load_behavioral_request(path: str | Path) -> dict:
         raw = json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise ValueError(f"could not read valid JSON request: {exc}") from exc
-    if isinstance(raw, dict) and raw.get("topology") == "rc_lowpass":
-        return validate_rc_request(raw)
-    return validate_topology_request(raw)
+    return validate_behavioral_request(raw)
+
+
+def validate_behavioral_request(request: Any) -> dict:
+    """Validate and normalize an in-memory request for any currently supported topology."""
+    if isinstance(request, dict) and request.get("topology") == "rc_lowpass":
+        return validate_rc_request(request)
+    return validate_topology_request(request)
 
 
 def validate_topology_request(request: Any) -> dict:

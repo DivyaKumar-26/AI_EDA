@@ -1,9 +1,26 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+build/
+dist*/
+*.egg-info/
+.package-build-tmp/
 
 /output/*
 !/output/analog_examples_v2/
 !/output/rl_rc_v1/
+!/output/rl_rc_target_benchmark_v1/
+!/output/rl_rc_target_benchmark_v2/
+!/output/rl_rc_target_benchmark_v3/
+!/output/rl_rc_target_benchmark_v4/
+!/output/rl_rc_target_benchmark_v5/
+!/output/rl_rc_policy_diagnostics_v5/
+!/output/rl_rc_policy_diagnostics_v5_final/
+!/output/rl_rc_policy_diagnostics_v5_trace_comparison/
+!/output/rl_rc_policy_diagnostics_v5_trace_comparison_final/
+!/output/rl_rc_target_benchmark_v6/
+!/output/rl_rc_policy_comparison_v6/
+!/output/rl_rc_target_benchmark_v7/
+!/output/rl_rc_policy_comparison_v7_final/
 !/output/analog_examples_asc_v2/
 *.log

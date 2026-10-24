@@ -15,11 +15,17 @@ from .schematic import render_asc
 from .simulation import SimulationError
 from .topology_requests import (load_behavioral_request, simulate_topology_request,
                                 synthesize_behavioral_request)
+from .plain_language import parse_plain_language_request
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Synthesize a supported structured circuit request")
-    parser.add_argument("--request", required=True, type=Path, help="path to a versioned JSON design request")
+    input_group = parser.add_mutually_exclusive_group(required=True)
+    input_group.add_argument("--request", type=Path, help="path to a versioned JSON design request")
+    input_group.add_argument(
+        "--prompt",
+        help="offline sentence grammar for supported behavioral topologies, plus legacy labeled RC low-pass; see docs/plain-language-request.md",
+    )
     parser.add_argument("--simulate", action="store_true", help="run LTspice and verify measured cutoff and requested gain limits")
     parser.add_argument("--refine", action="store_true", help="try ranked E-series candidates until a measured pass or stop condition")
     parser.add_argument("--budget", type=int, help="maximum LTspice candidate simulations for --refine (required)")
@@ -41,10 +47,28 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--budget must be a positive integer")
     if not math.isfinite(args.timeout) or args.timeout <= 0:
         parser.error("--timeout must be finite and positive")
-    try:
-        request = load_behavioral_request(args.request)
-    except ValueError as exc:
-        parser.error(str(exc))
+    prompt_metadata = None
+    if args.prompt is not None:
+        try:
+            intake = parse_plain_language_request(args.prompt)
+        except ValueError as exc:
+            intake = {"status": "invalid_request", "message": str(exc)}
+        if intake["status"] != "complete":
+            json.dump({"intake_report": intake}, sys.stdout, indent=2, sort_keys=True)
+            sys.stdout.write("\n")
+            return 2
+        request = intake["request"]
+        prompt_metadata = {
+            "input_mode": "plain_language",
+            "original_prompt": args.prompt,
+            "normalized_request": request,
+            "intake_assumptions": intake["assumptions"],
+        }
+    else:
+        try:
+            request = load_behavioral_request(args.request)
+        except ValueError as exc:
+            parser.error(str(exc))
     if args.refine:
         if request["topology"] != "rc_lowpass":
             parser.error("--refine currently supports only rc_lowpass")
@@ -63,6 +87,8 @@ def main(argv: list[str] | None = None) -> int:
             "refinement_history": refined.history,
             "output_dir": str(args.output_dir.expanduser().resolve()),
         }
+        if prompt_metadata is not None:
+            output.update(prompt_metadata)
         if refined.selected_result is not None:
             result = refined.selected_result
             output.update({
@@ -94,7 +120,10 @@ def main(argv: list[str] | None = None) -> int:
         else:
             result = synthesize_behavioral_request(request)
     except NoFeasibleCandidateError as exc:
-        print(json.dumps({"error": str(exc), "synthesis_report": exc.report}, indent=2, sort_keys=True))
+        failure = {"error": str(exc), "synthesis_report": exc.report}
+        if prompt_metadata is not None:
+            failure.update(prompt_metadata)
+        print(json.dumps(failure, indent=2, sort_keys=True))
         return 2
     except (OSError, ValueError, SimulationError) as exc:
         parser.error(str(exc))
@@ -107,6 +136,8 @@ def main(argv: list[str] | None = None) -> int:
         ),
         "synthesis_report": result.report,
     }
+    if prompt_metadata is not None:
+        output.update(prompt_metadata)
     exit_code = 0
     if run is not None:
         output["verification_report"] = run.report

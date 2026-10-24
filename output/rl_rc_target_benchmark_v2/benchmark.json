@@ -1,0 +1,176 @@
+{
+  "artifact_files": [
+    "training-config.json",
+    "tasks.json",
+    "policy.json",
+    "episodes.json",
+    "summary.json"
+  ],
+  "benchmark_id": "rc_lowpass_target_aware_rl_vs_ranking_v1",
+  "candidate_grid": {
+    "capacitance_values_f": [
+      4.7e-08,
+      1e-07,
+      2.2e-07
+    ],
+    "resistance_values_ohm": [
+      680.0,
+      1000.0,
+      1500.0
+    ]
+  },
+  "dataset_provenance": {
+    "candidate_count": 9,
+    "measurement_dataset_sha256": "1d0c918045c57b712780337858f76d76701f12bf92dda83455ee0348c58f3c3a",
+    "raw_measurements_validated": "pinned SHA-256 and parsed cutoff matched benchmark and report",
+    "raw_trace_hashes_pinned": true,
+    "simulator": "LTspice ASCII batch AC output",
+    "source_benchmark": "output/rl_rc_v1/benchmark.json",
+    "trusted_benchmark_file_sha256": "0cf79dbcf01d5a18a279b382ad693f207a3d31fad90773be4252a84a7ba016d2"
+  },
+  "seed": 20261025,
+  "summary": {
+    "benchmark_id": "rc_lowpass_target_aware_rl_vs_ranking_v1",
+    "candidate_budget_per_episode": 3,
+    "conventional_analytical_ranking": {
+      "episodes": 45,
+      "mean_candidate_measurements": 1.0,
+      "mean_reward": 1.0,
+      "measured_pass_rate": 1.0,
+      "measured_passes": 45
+    },
+    "interpretation": "The conventional analytical ranking achieved a higher measured-pass rate under this bounded benchmark; RL did not beat the baseline.",
+    "limitation": "One fixed nine-candidate ideal RC grid and five held-out ranges; results do not establish generalization to other grids, conditions, topologies, or LTspice re-simulation.",
+    "policy_status": "experimental_not_integrated",
+    "production_qualified": false,
+    "rl": {
+      "episodes": 45,
+      "mean_candidate_measurements": 2.6666666666666665,
+      "mean_reward": 0.6671227739518797,
+      "measured_pass_rate": 0.35555555555555557,
+      "measured_passes": 16
+    },
+    "rl_minus_conventional_measured_pass_rate": -0.6444444444444444
+  },
+  "tasks": {
+    "held_out_targets_disjoint_from_training": true,
+    "held_out_tasks": [
+      {
+        "cutoff_range_hz": [
+          720.0,
+          730.0
+        ],
+        "task_id": "heldout_723"
+      },
+      {
+        "cutoff_range_hz": [
+          1059.0,
+          1062.0
+        ],
+        "task_id": "heldout_1061"
+      },
+      {
+        "cutoff_range_hz": [
+          1063.0,
+          1065.0
+        ],
+        "task_id": "heldout_1064"
+      },
+      {
+        "cutoff_range_hz": [
+          2255.0,
+          2260.0
+        ],
+        "task_id": "heldout_2257"
+      },
+      {
+        "cutoff_range_hz": [
+          2338.0,
+          2343.0
+        ],
+        "task_id": "heldout_2340"
+      }
+    ],
+    "start_states_per_task": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        2,
+        2
+      ]
+    ],
+    "training_tasks": [
+      {
+        "target_hz": 482.259522972956,
+        "task_id": "train_low",
+        "tolerance_percent": 1.0
+      },
+      {
+        "target_hz": 1591.4870757015626,
+        "task_id": "train_mid",
+        "tolerance_percent": 1.0
+      },
+      {
+        "target_hz": 3386.25088192633,
+        "task_id": "train_high",
+        "tolerance_percent": 1.0
+      },
+      {
+        "target_hz": 4979.550041232938,
+        "task_id": "train_upper",
+        "tolerance_percent": 1.0
+      }
+    ]
+  },
+  "training_config": {
+    "acceptance_evidence": "saved LTspice measured_cutoff_hz only; analytical cutoff is used only for conventional ranking",
+    "actions": [
+      "R_UP",
+      "R_DOWN",
+      "C_UP",
+      "C_DOWN"
+    ],
+    "algorithm": "tabular Q-learning with epsilon-greedy exploration",
+    "alpha": 0.25,
+    "epsilon_decay": 0.997,
+    "epsilon_min": 0.05,
+    "epsilon_start": 1.0,
+    "evaluation_candidate_measurement_budget_per_episode": 3,
+    "gamma": 0.9,
+    "reward": "absolute log-error improvement - 0.02 per measured-table step +1.0 on training target within 1%",
+    "seed": 20261025,
+    "state": "R index, C index, and target-relative measured-cutoff error band",
+    "training_episodes": 12000,
+    "training_max_steps": 8
+  }
+}

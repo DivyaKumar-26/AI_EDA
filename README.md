@@ -36,10 +36,84 @@ High-pass and RL paths do not yet support loaded conditions or bounded refinemen
 optimization, operating-condition corners, and other behaviors/topologies remain unsupported in
 the request path. The six-example workflows remain separate.
 
+## Installable Python package
+
+CircuitPilot can be installed from this repository without extra Python runtime dependencies.
+It requires Python 3.10 or newer. From the repository root, install an editable checkout with:
+
+```powershell
+python -m pip install -e .
+```
+
+The `circuitpilot-design` command validates and synthesizes a JSON or supported sentence-style
+request. JSON-request mode prints the `CircuitIR`, netlist, ASC text, and synthesis report;
+sentence-prompt mode also includes the original prompt and `normalized_request` intake result:
+
+```powershell
+circuitpilot-design --request request.json
+circuitpilot-design --prompt "Design an RC low-pass filter with cutoff from 1.5 kHz to 1.7 kHz, resistance from 1 kOhm to 10 kOhm using E12, and capacitance from 50 nF to 150 nF using E12."
+```
+
+An import-level synthesis example uses the same request validators and synthesis path as the CLI:
+
+```python
+from circuitpilot import (
+    render_asc,
+    synthesize_behavioral_request,
+    validate_behavioral_request,
+)
+
+request = {
+    "schema_version": 1,
+    "topology": "rc_lowpass",
+    "behavior": {"cutoff_hz": {"min": 1500, "max": 1700, "target": 1591.55}},
+    "components": {
+        "resistance_ohm": {"min": 1000, "max": 10000, "series": "E12"},
+        "capacitance_f": {"min": 5e-8, "max": 1.5e-7, "series": "E12"},
+    },
+}
+normalized = validate_behavioral_request(request)
+result = synthesize_behavioral_request(normalized)
+print(result.circuit_ir.render())
+asc_text = render_asc(result.circuit_ir)
+```
+
+For the documented deterministic sentence grammar, parse to an intake report and pass its
+complete request through the same validation and synthesis API:
+
+```python
+from circuitpilot import parse_plain_language_request, validate_behavioral_request
+
+intake = parse_plain_language_request(
+    "Design an RC low-pass filter with cutoff from 1.5 kHz to 1.7 kHz, resistance from 1 kOhm to 10 kOhm using E12, and capacitance from 50 nF to 150 nF using E12."
+)
+if intake["status"] == "complete":
+    normalized = validate_behavioral_request(intake["request"])
+```
+
+The public API also exposes `CircuitIR` types and simulation functions. `simulate_rc_request`
+handles RC low-pass requests and returns an `RCRequestRun`; `simulate_topology_request` handles
+the other supported behavioral topologies and returns the candidate plus verification report.
+Both simulation functions require a new, unused output directory and write run artifacts there.
+LTspice is an external executable required only for simulation; synthesis and artifact rendering
+run offline. The
+`circuitpilot-examples` and `circuitpilot-schematics` commands serve the separate six-example
+workflows. The experimental RL benchmark module is included in the package, but it has no
+dedicated console entry point and its measured-data tree is not bundled in the wheel. The default
+dataset path is source-checkout-relative, so an installed run must pass `--dataset` pointing to
+the full provenance-pinned `output/rl_rc_v1/benchmark.json` tree, including every referenced
+simulation report and raw trace. Otherwise, run the benchmark from the source checkout. This
+remains a fixed-grid experiment, not a general-purpose RL design feature. An installed invocation
+must name both the complete dataset tree and a fresh output folder:
+
+```powershell
+python -m circuitpilot.benchmark_rc_policy --dataset C:\data\rl_rc_v1\benchmark.json --output-dir C:\data\new-policy-run
+```
+
 ## Project goal
 
-Build a behavior-driven synthesis pipeline that accepts structured requests first and adds a
-natural-language entry later. The pipeline should identify a supported topology, initialize a
+Build a behavior-driven synthesis pipeline that accepts structured requests and a bounded
+sentence-style prompt grammar for current request topologies. The pipeline should identify a supported topology, initialize a
 candidate from explicit component bounds and design rules, and produce the `CircuitIR` used for
 both ASC and CIR generation. It should run LTspice, measure requested behavior, and evaluate hard
 limits from those measurements. If a candidate fails, bounded conventional optimization should
@@ -210,8 +284,9 @@ LTspice run with a 120-second timeout completed successfully at
 the [LTspice log](output/hackathon_opamp_rc_lowpass_retry_120s_20261024/design.log) is saved
 beside the report. This is nominal smoke verification only; `production_qualified` remains
 `false`. Regression tests cover the RC high-pass ascending crossing, RL low-pass generated
-circuit, and buffered RC simulation measurement seam. Real LTspice verification for high-pass
-and RL remains outstanding. Request reports keep `production_qualified: false`.
+circuit, and buffered RC simulation measurement seam. The initial high-pass and RL timeout
+attempts are superseded by the successful 2026-10-25 reports below. Request reports keep
+`production_qualified: false`.
 
 The inverting-op-amp request initially timed out at 120 seconds with an AC-only source and a
 shorter sweep. A fresh retry matches the fixed example's `DC 0 AC 1` source and 10 Hz–100 MHz
@@ -221,6 +296,12 @@ and [LTspice log](output/hackathon_inverting_opamp_smoke_retry_120s_20261024/des
 `output/hackathon_inverting_opamp_smoke_retry_120s_20261024`; the failed run remains preserved
 in `output/hackathon_inverting_opamp_smoke_120s_20261024`. This is nominal smoke evidence only;
 `production_qualified` remains `false`.
+
+The later RC high-pass, RL low-pass, and experimental series RLC smoke checks completed
+successfully with 201 AC points each. High-pass measured 1591.5494309188985 Hz versus
+1591.5494309189537 Hz expected; RL low-pass measured 1591.5510043559714 Hz versus
+1591.5494309189535 Hz expected; RLC measured resonance 1591.5494309189535 Hz, matching its
+prediction. All three passed the requested inclusive 1500–1700 Hz range. Reports: [RC high-pass](output/hackathon_rc_highpass_verify_20261025/request-verification.json), [RL low-pass](output/hackathon_rl_lowpass_verify_20261025/request-verification.json), [series RLC](output/hackathon_series_rlc_verify_20261025/request-verification.json). Earlier timeout folders remain superseded diagnostics. These are nominal smoke checks; `production_qualified` remains `false`.
 
 ### Historical completed artifacts
 
@@ -239,6 +320,72 @@ tolerance from 9/9 start states with 1.33 mean actions. A seeded random walk suc
 296/450 runs (65.8%); the best grid point had 0.0039179% error. This is a finite fixed-grid
 comparison, not held-out or cross-topology RL evidence. Training replays a premeasured
 table.
+
+### Target-aware RC policy benchmark (offline)
+
+`engine/circuitpilot/rc_rl_benchmark.py` adds an experimental, offline target-aware benchmark
+using only those same nine existing LTspice-measured RC grid values. It checks a pinned SHA-256
+for the canonical benchmark content and for every raw trace, parses each ASCII trace, and requires
+its cutoff to match both the benchmark and its simulation report. For the v4 training-side
+experiment, 12,000 targets are sampled log-uniformly from the measured cutoff span
+(482.2595–4979.5500 Hz), excluding the five held-out ranges after expanding each by a 5%
+multiplicative guard band. This leaves approximately 482.26–685.71, 766.50–1008.57,
+1118.25–2147.62, and 2460.15–4979.55 Hz. The exact intervals and full seeded task manifest
+are saved with the run. Evaluation remains the same five held-out ranges × nine starting states (45 tasks).
+Seed `20261025`, policy/configuration, per-episode actions/rewards/measurements/stop reasons, and
+summary are saved in `output/rl_rc_target_benchmark_v4/`; the 120,000-episode run is in
+`output/rl_rc_target_benchmark_v5/`. Earlier v1–v3 folders are preserved as prior experiment
+evidence.
+
+Reproduce v4 with the same seed and configuration in a new output folder (the CLI refuses to
+overwrite an existing run):
+
+```powershell
+$env:PYTHONPATH='engine'; python -m circuitpilot.benchmark_rc_policy --output-dir output/rl_rc_target_benchmark_replay1 --seed 20261025 --training-episodes 12000 --candidate-budget 3 --training-max-steps 8
+```
+
+The one-time 10× v5 local-proposal run used:
+
+```powershell
+$env:PYTHONPATH='engine'; python -m circuitpilot.benchmark_rc_policy --output-dir output/rl_rc_target_benchmark_v5_replay1 --seed 20261025 --training-episodes 120000 --candidate-budget 3 --training-max-steps 8
+```
+
+The predeclared global-proposal comparison used the same seed, 120,000 training episodes,
+held-out tasks, dataset, and three-measurement budget. Global actions can propose any of the nine
+measured R/C states directly, while masking states already measured in the episode. The legacy
+local proposal mode remains the default and reproduces v4/v5 behavior; a same-seed, 120,000-episode
+local replay reproduced v5's task manifest and all 45 RL episode traces exactly (14/45 passes).
+The initial global run v6 is preserved as a pre-repair diagnostic. After fixing terminal handling
+for training starts that already meet target, the final v7 run and comparison are saved in
+`output/rl_rc_target_benchmark_v7/` and `output/rl_rc_policy_comparison_v7_final/`:
+
+```powershell
+$env:PYTHONPATH='engine'; python -m circuitpilot.benchmark_rc_policy --output-dir output/rl_rc_target_benchmark_v7_replay1 --seed 20261025 --training-episodes 120000 --candidate-budget 3 --training-max-steps 8 --proposal-mode global
+```
+
+With a budget of three candidate measurements per task, v4 passed 20/45 held-out tasks (44.4%),
+up from v3's 16/45 (35.6%). The single predeclared 10× training run in v5 passed 14/45 (31.1%),
+so additional training reduced held-out performance. Conventional analytical ranking passed
+45/45 (100%) using the same stored LTspice measurements as acceptance evidence. The diagnostic
+in `output/rl_rc_policy_diagnostics_v5_trace_comparison_final/` finds only 33/45 task/start pairs can reach a
+passing candidate with RL's action graph and this budget: the first measurement is the start
+state, leaving two adjacent R/C moves. Thus 12 misses are structurally unavoidable at budget 3;
+the remaining 33 task/start pairs are structurally reachable. v5 passed 14 of those 33 and missed
+19: 11 by selecting the wrong candidate/direction and 8 by repeating or stalling. v4 passed 20
+and missed 13 of the same 33 (8 candidate-selection and 5 repeated/stalled misses). Equal
+measurement budgets do not imply equal candidate access: analytical
+ranking can jump directly to any of the nine grid states and passed all 45 tasks. This benchmark
+launches no LTspice runs and does not establish generalization beyond the fixed grid or evaluation
+ranges. In the repaired v7 global run, RL passed 18/45 (40.0%), versus local v5's 14/45 (31.1%).
+All 45 held-out tasks are theoretically reachable by global proposals within budget 3, so its 27
+misses are avoidable policy selections. The preserved pre-repair v6 run passed 17/45 (37.8%).
+The historical analytical baseline passed 45/45 without
+charging for the start measurement; a new start-aware comparator charges for that measurement and
+then ranks any unvisited grid point, also passing 45/45 with 1.89 mean measurements. This exposes
+that equal measurement budgets do not imply equal learning quality even after matching candidate
+access. Per-task traces and miss classifications are in the v7 comparison output. The benchmark
+remains experimental, is not connected to `design_request_cli`, and `production_qualified` remains
+`false`.
 
 ### Historical hardening diagnostic notes
 
@@ -291,12 +438,17 @@ requirements. It has a copy/paste prompt, a JSON example, supported metric names
 current machine-readable contract at
 [schemas/design-requirements.schema.json](schemas/design-requirements.schema.json).
 
-The natural-language prompt is for gathering information. The engine does not parse prose.
-Translate the answers into the validated JSON specification before asking the current engine
-to evaluate limits. Unknown requirements remain unknown; do not invent values to fill them.
+The measurement-requirements prompt below is for gathering information and is not parsed by
+that workflow. Separately, the behavioral CLI supports an offline `--prompt` grammar for
+sentence-style requests across the current RC/RL filter, buffered RC, series RLC, and inverting
+op-amp topologies, plus the legacy labeled RC low-pass form. It returns a normalized request or
+clarification and rejects unsupported or ambiguous wording. This is bounded phrase parsing,
+not general prose understanding. See [the plain-language intake guide](docs/plain-language-request.md).
+Unknown requirements remain unknown; do not invent values to fill them.
 The measurement-requirements runner supports the six listed designs and their declared
-fields/metrics; the separate structured behavioral path currently synthesizes RC low-pass
-requests as documented below.
+fields/metrics. The separate structured behavioral path supports the RC/RL filter, buffered RC,
+series RLC, and inverting op-amp request topologies; its initial RC low-pass contract is
+documented below.
 
 For the initial behavioral synthesis path, see
 [`docs/rc-lowpass-request.md`](docs/rc-lowpass-request.md) and
@@ -425,9 +577,10 @@ Extend the structured RC request path from nominal source/load conditions and cu
 gain to operating-condition corners and additional measurements, and broaden the current bounded
 E-series refinement beyond first measured pass.
 Extend the request and initialization pipeline to
-additional behavior/topology families while keeping unsupported behavior explicit. Add
-natural-language request intake as a front end that produces a validated structured request; it
-must not invent missing electrical limits. Evaluate RL as an optional proposal policy against the conventional
+additional behavior/topology families while keeping unsupported behavior explicit. Expand the
+offline prompt grammar beyond the current supported topologies and strict sentence patterns while
+preserving clarification for missing limits and explicit rejection of unsupported phrasing.
+Evaluate RL as an optional proposal policy against the conventional
 baseline on held-out tasks. A VS Code experience, broader robustness work, and release
 qualification follow once these stages have evidence. The existing six-design simulation and
 ASC/CIR comparison results remain evidence for those example workflows only; they do not

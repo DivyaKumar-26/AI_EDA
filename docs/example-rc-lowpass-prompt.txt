@@ -1,0 +1,1 @@
+RC low-pass; cutoff: 1.5 kHz to 1.7 kHz; target: 1.59155 kHz; resistance: 1 kOhm to 10 kOhm E12; capacitance: 50 nF to 150 nF E12
