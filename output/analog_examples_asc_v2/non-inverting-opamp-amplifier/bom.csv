@@ -1,0 +1,4 @@
+﻿Reference,Value / model,Quantity
+U1,CP_OPAMP one-pole macro (simulation model),1
+RG,"10 kΩ, 1%",1
+RF,"100 kΩ, 1%",1

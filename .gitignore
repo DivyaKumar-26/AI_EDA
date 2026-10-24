@@ -5,4 +5,5 @@ __pycache__/
 /output/*
 !/output/analog_examples_v2/
 !/output/rl_rc_v1/
+!/output/analog_examples_asc_v2/
 *.log

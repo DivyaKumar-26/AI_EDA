@@ -1,0 +1,128 @@
+{
+  "ir_nodes_by_reference": {
+    "VDD": [
+      "vdd",
+      "0"
+    ],
+    "RG1": [
+      "vdd",
+      "gate"
+    ],
+    "RG2": [
+      "gate",
+      "0"
+    ],
+    "RD": [
+      "vdd",
+      "drain"
+    ],
+    "RS": [
+      "source",
+      "0"
+    ],
+    "M1": [
+      "drain",
+      "gate",
+      "source",
+      "source"
+    ]
+  },
+  "symbol_pin_mapping": {
+    "VDD": {
+      "symbol": "voltage",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "+",
+          "net": "vdd"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "-",
+          "net": "0"
+        }
+      ]
+    },
+    "RG1": {
+      "symbol": "res",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "A",
+          "net": "vdd"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "B",
+          "net": "gate"
+        }
+      ]
+    },
+    "RG2": {
+      "symbol": "res",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "A",
+          "net": "gate"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "B",
+          "net": "0"
+        }
+      ]
+    },
+    "RD": {
+      "symbol": "res",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "A",
+          "net": "vdd"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "B",
+          "net": "drain"
+        }
+      ]
+    },
+    "RS": {
+      "symbol": "res",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "A",
+          "net": "source"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "B",
+          "net": "0"
+        }
+      ]
+    },
+    "M1": {
+      "symbol": "nmos",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "D",
+          "net": "drain"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "G",
+          "net": "gate"
+        },
+        {
+          "spice_order": 3,
+          "pin_name": "S",
+          "net": "source"
+        }
+      ],
+      "implicit_bulk_tied_to": "source"
+    }
+  }
+}

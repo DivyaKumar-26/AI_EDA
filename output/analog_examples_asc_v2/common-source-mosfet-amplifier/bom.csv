@@ -1,0 +1,8 @@
+﻿Reference,Value / model,Quantity
+M1,"NMOS, generic LTspice model",1
+RD,"1 kΩ, 1%",1
+RS,"470 Ω, 1%",1
+RG1,"1 MΩ, 1%",1
+RG2,"390 kΩ, 1%",1
+CIN,10 µF,1
+CS,100 µF,1

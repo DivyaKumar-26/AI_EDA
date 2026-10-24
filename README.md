@@ -10,7 +10,7 @@ See the [plain-language implementation plan](docs/implementation-plan.md) for th
 
 ### Implemented foundation: RC low-pass and simulation examples
 
-The Python engine supports a validated first-order RC low-pass workflow, six deterministic LTspice example designs, a reusable `CircuitIR`/topology registry, and a tabular RC tuning experiment. The default RC CLI reports the ideal analytical cutoff; its opt-in simulation mode runs LTspice. The example library covers MOSFET/BJT common-source/common-emitter amplifiers, inverting/non-inverting op-amp amplifiers, and MOSFET/BJT divider bias networks. It does not create `.asc` schematics or evaluate arbitrary user-supplied product constraints.
+The Python engine supports a validated first-order RC low-pass workflow, six deterministic LTspice example designs, a reusable `CircuitIR`/topology registry, and a tabular RC tuning experiment. The default RC CLI reports the ideal analytical cutoff; its opt-in simulation mode runs LTspice. The example library covers MOSFET/BJT common-source/common-emitter amplifiers, inverting/non-inverting op-amp amplifiers, and MOSFET/BJT divider bias networks. It does not evaluate arbitrary user-supplied product constraints.
 
 The Python engine package is under `engine/circuitpilot`. The project root is the directory containing this `README.md`. If the project is nested inside a container directory, use the inner project root; the outer container does not contain the Python package. From the project root, with Python 3.10 or newer:
 
@@ -28,7 +28,7 @@ To run the netlist in an installed LTspice for Windows and measure its simulated
 python -m circuitpilot --r 1000 --c 1e-7 --simulate --output-dir output/ltspice_run
 ```
 
-LTspice is discovered from `PATH` or its standard per-user install location; pass `--ltspice <path-to-LTspice.exe>` if automatic discovery does not find it. Simulation writes `rc_lowpass.cir`, LTspice `.raw`/`.log` outputs, and `verification-report.json` into the selected directory. Existing artifacts with those names are not overwritten. The cutoff is measured from `|V(out)/V(in)|` against the unity passband in log-frequency and dB. Since the sweep is fixed at 1 Hz to 1 MHz, a cutoff below the lower limit is reported as outside the sweep, and a cutoff above the upper limit has no measured crossing. The report distinguishes a completed simulation from design verification: without a hard target constraint, its verification status is `not_evaluated` and `design_pass` is false. The `.cir` netlist is the simulation input; an editable `.asc` schematic is not generated in this milestone.
+LTspice is discovered from `PATH` or its standard per-user install location; pass `--ltspice <path-to-LTspice.exe>` if automatic discovery does not find it. Simulation writes `rc_lowpass.cir`, LTspice `.raw`/`.log` outputs, and `verification-report.json` into the selected directory. Existing artifacts with those names are not overwritten. The cutoff is measured from `|V(out)/V(in)|` against the unity passband in log-frequency and dB. Since the sweep is fixed at 1 Hz to 1 MHz, a cutoff below the lower limit is reported as outside the sweep, and a cutoff above the upper limit has no measured crossing. The report distinguishes a completed simulation from design verification: without a hard target constraint, its verification status is `not_evaluated` and `design_pass` is false. The `.cir` netlist is the simulation input; the six-design ASC exporter is described below.
 
 To run focused unit tests, install `pytest` and run `python -m pytest` from the project root.
 
@@ -61,7 +61,19 @@ Run a single example by repeating `--design` as needed, for example:
 python -m circuitpilot.examples_cli --design inverting-opamp-amplifier --output-root output/analog_examples
 ```
 
-Amplifier reports include operating-point voltages, AC gain and phase at 1 kHz, peak gain, and interpolated −3 dB bandwidth. MOSFET and BJT amplifier reports also include bias checks. The bias network designs perform 9–15 V DC sweeps and check the transistor operating region at each sweep point. A report's `design_pass` reflects only the stated topology checks; it does not qualify the design against a product specification. The op-amp examples use a self-contained one-pole behavioral model and omit important real-device limits such as slew rate, input offset, supply rails, and output current limiting. MOSFET and BJT examples use generic self-contained models. These are simulation examples for exploration, not production-ready designs. The `.cir` files are the editable design artifacts; no `.asc` schematic is emitted.
+Amplifier reports include operating-point voltages, AC gain and phase at 1 kHz, peak gain, and interpolated −3 dB bandwidth. MOSFET and BJT amplifier reports also include bias checks. The bias network designs perform 9–15 V DC sweeps and check the transistor operating region at each sweep point. A report's `design_pass` reflects only the stated topology checks; it does not qualify the design against a product specification. The op-amp examples use a self-contained one-pole behavioral model and omit important real-device limits such as slew rate, input offset, supply rails, and output current limiting. MOSFET and BJT examples use generic self-contained models. These are simulation examples for exploration, not production-ready designs. Both `.cir` and `.asc` files are generated from the same IR; ASC simulation status is tracked separately.
+
+### Editable ASC export
+
+Export the six examples as editable LTspice schematics, with the canonical `.cir`, BOM, connectivity manifest, and custom symbol support beside each file:
+
+```powershell
+python -m circuitpilot.schematics_cli --export-only --output-root output/analog_examples_asc_v2
+```
+
+The exporter maps symbol pins using LTspice `SpiceOrder` and assigns each IR net to a labeled flag connected by a short wire. Its connectivity manifest records both IR terminal order and symbol pin names. The op-amp sheets include a local `CP_OPAMP.asy`; model definitions and analysis directives are placed on the sheet.
+
+ASC batch simulation was not verified in the current environment: batch attempts here did not produce `.net` or `.raw` outputs. The exported ASC files are structurally checked against the IR and reports mark `simulation_status` as `not_run`. Successful CIR-based LTspice simulation results remain separately available in `output/analog_examples_v2`; those results do not establish that the ASC files themselves simulate.
 
 ## Vision
 

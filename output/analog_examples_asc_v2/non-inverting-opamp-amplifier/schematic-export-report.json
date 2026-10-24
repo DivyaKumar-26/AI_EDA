@@ -1,0 +1,99 @@
+{
+  "design_id": "non-inverting-opamp-amplifier",
+  "export_status": "completed",
+  "simulation_status": "not_run",
+  "schematic": "non-inverting-opamp-amplifier.asc",
+  "canonical_netlist": "non-inverting-opamp-amplifier.cir",
+  "bom": "bom.csv",
+  "support_symbols": [
+    "CP_OPAMP.asy"
+  ],
+  "connectivity_source": "CircuitIR element pins, mapped by LTspice symbol SpiceOrder",
+  "connectivity": {
+    "VIN": [
+      "in",
+      "0"
+    ],
+    "RG": [
+      "fb",
+      "0"
+    ],
+    "RF": [
+      "out",
+      "fb"
+    ],
+    "XU1": [
+      "in",
+      "fb",
+      "out"
+    ]
+  },
+  "symbol_pin_mapping": {
+    "VIN": {
+      "symbol": "voltage",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "+",
+          "net": "in"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "-",
+          "net": "0"
+        }
+      ]
+    },
+    "RG": {
+      "symbol": "res",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "A",
+          "net": "fb"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "B",
+          "net": "0"
+        }
+      ]
+    },
+    "RF": {
+      "symbol": "res",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "A",
+          "net": "out"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "B",
+          "net": "fb"
+        }
+      ]
+    },
+    "XU1": {
+      "symbol": "CP_OPAMP",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "INP",
+          "net": "in"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "INM",
+          "net": "fb"
+        },
+        {
+          "spice_order": 3,
+          "pin_name": "OUT",
+          "net": "out"
+        }
+      ]
+    }
+  },
+  "simulation_note": "ASC batch simulation was unavailable in the current environment; this is a structural export, not ASC simulation verification."
+}

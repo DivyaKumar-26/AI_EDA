@@ -1,0 +1,16 @@
+* CircuitPilot inverting op-amp amplifier, nominal gain -10 V/V
+VIN in 0 DC 0 AC 1
+RIN in summing 10k
+RF out summing 100k
+XU1 0 summing out CP_OPAMP
+.subckt CP_OPAMP INP INM OUT
+BOL NRAW 0 V=limit(100000*(V(INP)-V(INM)),-14,14)
+RDOM NRAW NCOMP 1k
+CDOM NCOMP 0 1u
+RBIAS NCOMP 0 1Meg
+EOUT NBUF 0 NCOMP 0 1
+ROUT NBUF OUT 50
+RLEAK OUT 0 1G
+.ends CP_OPAMP
+.ac dec 100 10 100Meg
+.end

@@ -1,0 +1,126 @@
+{
+  "ir_nodes_by_reference": {
+    "VCC": [
+      "vcc",
+      "0"
+    ],
+    "RB1": [
+      "vcc",
+      "base"
+    ],
+    "RB2": [
+      "base",
+      "0"
+    ],
+    "RC": [
+      "vcc",
+      "collector"
+    ],
+    "RE": [
+      "emitter",
+      "0"
+    ],
+    "Q1": [
+      "collector",
+      "base",
+      "emitter"
+    ]
+  },
+  "symbol_pin_mapping": {
+    "VCC": {
+      "symbol": "voltage",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "+",
+          "net": "vcc"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "-",
+          "net": "0"
+        }
+      ]
+    },
+    "RB1": {
+      "symbol": "res",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "A",
+          "net": "vcc"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "B",
+          "net": "base"
+        }
+      ]
+    },
+    "RB2": {
+      "symbol": "res",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "A",
+          "net": "base"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "B",
+          "net": "0"
+        }
+      ]
+    },
+    "RC": {
+      "symbol": "res",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "A",
+          "net": "vcc"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "B",
+          "net": "collector"
+        }
+      ]
+    },
+    "RE": {
+      "symbol": "res",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "A",
+          "net": "emitter"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "B",
+          "net": "0"
+        }
+      ]
+    },
+    "Q1": {
+      "symbol": "npn",
+      "pins": [
+        {
+          "spice_order": 1,
+          "pin_name": "C",
+          "net": "collector"
+        },
+        {
+          "spice_order": 2,
+          "pin_name": "B",
+          "net": "base"
+        },
+        {
+          "spice_order": 3,
+          "pin_name": "E",
+          "net": "emitter"
+        }
+      ]
+    }
+  }
+}

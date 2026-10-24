@@ -1,0 +1,10 @@
+* CircuitPilot NMOS divider bias network
+VDD vdd 0 12
+RG1 vdd gate 1Meg
+RG2 gate 0 390k
+RD vdd drain 1k
+RS source 0 470
+M1 drain gate source source CP_NMOS W=10u L=1u
+.model CP_NMOS NMOS(VTO=2 KP=10m LAMBDA=0.02 CGSO=10n CGDO=5n)
+.dc VDD 9 15 0.5
+.end
