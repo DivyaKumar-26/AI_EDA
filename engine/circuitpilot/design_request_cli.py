@@ -8,11 +8,13 @@ import math
 from pathlib import Path
 import sys
 
-from .rc_request import NoFeasibleCandidateError, load_rc_request, synthesize_rc_request
+from .rc_request import NoFeasibleCandidateError, synthesize_rc_request
 from .rc_request_simulation import simulate_rc_request
 from .rc_request_refinement import refine_rc_request
 from .schematic import render_asc
 from .simulation import SimulationError
+from .topology_requests import (load_behavioral_request, simulate_topology_request,
+                                synthesize_behavioral_request)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -40,10 +42,12 @@ def main(argv: list[str] | None = None) -> int:
     if not math.isfinite(args.timeout) or args.timeout <= 0:
         parser.error("--timeout must be finite and positive")
     try:
-        request = load_rc_request(args.request)
+        request = load_behavioral_request(args.request)
     except ValueError as exc:
         parser.error(str(exc))
     if args.refine:
+        if request["topology"] != "rc_lowpass":
+            parser.error("--refine currently supports only rc_lowpass")
         try:
             refined = refine_rc_request(
                 request,
@@ -73,17 +77,22 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if refined.report["design_pass"] else 1
 
     run = None
+    alternate_report = None
     try:
         if args.simulate:
-            run = simulate_rc_request(
-                request,
-                args.output_dir,
-                executable=args.ltspice,
-                timeout_seconds=args.timeout,
-            )
-            result = run.synthesis_result
+            if request["topology"] == "rc_lowpass":
+                run = simulate_rc_request(
+                    request,
+                    args.output_dir,
+                    executable=args.ltspice,
+                    timeout_seconds=args.timeout,
+                )
+                result = run.synthesis_result
+            else:
+                result, alternate_report = simulate_topology_request(
+                    request, args.output_dir, executable=args.ltspice, timeout_seconds=args.timeout)
         else:
-            result = synthesize_rc_request(request)
+            result = synthesize_behavioral_request(request)
     except NoFeasibleCandidateError as exc:
         print(json.dumps({"error": str(exc), "synthesis_report": exc.report}, indent=2, sort_keys=True))
         return 2
@@ -92,7 +101,10 @@ def main(argv: list[str] | None = None) -> int:
     output = {
         "circuit_ir": result.circuit_ir.to_dict(),
         "netlist": result.circuit_ir.render(),
-        "asc": render_asc(result.circuit_ir, sheet_title="CircuitPilot RC low-pass"),
+        "asc": render_asc(
+            result.circuit_ir,
+            sheet_title="CircuitPilot RC low-pass" if request["topology"] == "rc_lowpass" else result.circuit_ir.title,
+        ),
         "synthesis_report": result.report,
     }
     exit_code = 0
@@ -100,6 +112,10 @@ def main(argv: list[str] | None = None) -> int:
         output["verification_report"] = run.report
         output["output_dir"] = str(args.output_dir.expanduser().resolve())
         exit_code = 0 if run.report["design_pass"] else 1
+    elif alternate_report is not None:
+        output["verification_report"] = alternate_report
+        output["output_dir"] = str(args.output_dir.expanduser().resolve())
+        exit_code = 0 if alternate_report["design_pass"] else 1
     json.dump(output, sys.stdout, indent=2, sort_keys=True)
     sys.stdout.write("\n")
     return exit_code

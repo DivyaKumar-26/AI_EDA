@@ -19,6 +19,7 @@ class SymbolSpec:
 SYMBOLS = {
     "R": SymbolSpec("res", ((16, 16), (16, 96)), ("A", "B"), "R"),
     "C": SymbolSpec("cap", ((16, 0), (16, 64)), ("A", "B"), "C"),
+    "L": SymbolSpec("ind", ((16, 16), (16, 96)), ("A", "B"), "L"),
     "V": SymbolSpec("voltage", ((0, 16), (0, 96)), ("+", "-"), "V"),
     "I": SymbolSpec("current", ((0, 0), (0, 80)), ("+", "-"), "I"),
     "Q": SymbolSpec("npn", ((64, 0), (0, 48), (64, 96)), ("C", "B", "E"), "Q"),

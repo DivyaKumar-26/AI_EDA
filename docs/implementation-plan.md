@@ -2,14 +2,22 @@
 
 ## Current implementation status
 
-The behavior-driven request implementation is currently a bounded first slice: structured JSON
-requests for an RC low-pass with optional nominal source/load conditions and optional passband-
-gain bounds. It validates an inclusive cutoff range and explicit R/C bounds and E-series,
-searches deterministic standard-value pairs, and returns a candidate, report, and `CircuitIR`.
-It renders both the netlist and ASC from that returned IR. An explicit CLI simulation mode sends
-that same IR through the existing LTspice runner, estimates low-frequency passband gain from the
-complex one-pole AC asymptote, measures cutoff relative to that estimate, and checks the requested
-bounds. The
+The request path supports structured JSON RC low-pass, RC high-pass, RL low-pass, op-amp buffered
+RC low-pass, inverting op-amp amplifier, and experimental series RLC band-pass designs.
+The established RC low-pass retains its optional nominal source/load and passband-gain behavior.
+The added high-pass/RL handlers use a small topology dispatch, explicit component/cutoff bounds,
+deterministic E-series search, and ideal source/open load; they do not yet have loading, gain
+bounds, or refinement. The buffered RC handler uses the existing CP_OPAMP one-pole macro and
+exports its required symbol file for simulated ASC output; it also supports only ideal source/open
+load. The series RLC handler searches explicit R/C/L bounds for a requested
+resonance range and measures the output peak; it has no Q/source/load constraints. Each handler
+returns `CircuitIR` and derives its CIR/ASC artifacts from it.
+The inverting op-amp request searches E-series input/feedback resistor pairs for an inclusive
+gain-magnitude range, measures at 1 kHz, and caps gain at 100 V/V for the generic macro's finite
+gain-bandwidth.
+Simulation measures cutoff in the topology's crossing direction: descending for low-pass and
+ascending for RC high-pass. The RC low-pass runner estimates low-frequency passband gain from the
+complex one-pole AC asymptote and checks its existing optional gain bound. The
 synthesis report remains analytical;
 simulation verification is reported separately and fails closed on launch, raw-data, or
 measurement failures. The request runner synthesizes from the request itself, then adapts the
@@ -74,10 +82,10 @@ The reference project demonstrates a useful workflow: create a SPICE netlist, ru
 
 | Step | Status | Scope and completion evidence |
 |---|---|---|
-| 1. Structured behavioral request | **Partial: RC low-pass only.** Strict JSON validation, optional nominal source/load resistance, optional passband-gain bounds, cutoff/component bounds and E-series, deterministic candidate search, fail-closed infeasibility, and reports are implemented. | Add other request behaviors/topologies with validation and regression coverage. Synthesis feasibility remains analytical. |
-| 2. Topology selection and initialization | **Partial: fixed topology.** The request selects `rc_lowpass` and synthesis initializes standard R/C values. No general topology registry selection or multi-topology initializer is connected to this request flow. | Add explicit supported-topology selection and initialization rules, with no silent assumptions. |
+| 1. Structured behavioral request | **Partial: first-order filters plus experimental series RLC band-pass and inverting op-amp amplifier.** Strict JSON validation, E-series R/C/L and resistor-pair candidate bounds, deterministic search, analytical feasibility reports, RC low-pass nominal source/load and optional passband-gain bounds, cutoff-only RC high-pass/RL low-pass/op-amp buffered RC handlers, RLC resonance-range synthesis, and inverting gain-magnitude synthesis are implemented. | Add other request behaviors/topologies and extend conditions/gain/Q constraints to newer handlers. Synthesis feasibility remains analytical. |
+| 2. Topology selection and initialization | **Partial: small explicit dispatch.** Request `topology` dispatches to the established RC low-pass, RC high-pass, RL low-pass, op-amp buffered RC low-pass, inverting op-amp amplifier, or experimental series RLC handler. New handlers use ideal source/open load only. | Generalize topology choices with explicit rules and additional tests as scope grows; do not add silent defaults. |
 | 3. One source of circuit artifacts | **Implemented for the RC slice.** It returns `CircuitIR` and derives both SPICE netlist and ASC from it. Separate six-example ASC/CIR flows also exist. | Keep connectivity and values tied to the same IR as topology coverage grows. |
-| 4. Simulation and hard verification | **Partial: nominal RC verification.** `--simulate` synthesizes from the request, adapts the IR's sweep around its candidate, runs LTspice, estimates DC/passband gain from the complex one-pole AC asymptote (`median real(1/H)`), measures cutoff relative to that estimate, and separately checks requested cutoff and optional gain limits. Synthesis `pass` fields remain analytical. Real ideal-source/open-load cutoff evidence and one loaded cutoff/passband LTspice run are recorded; the loaded run passes both requested limits. The earlier loaded run using the sweep-start method is identified as a superseded diagnostic. | Extend to requested-condition corners and other metrics; retain fail-closed launch, raw-data, measurement, and limit behavior. |
+| 4. Simulation and hard verification | **Partial: nominal filter verification.** RC low-pass and buffered RC low-pass estimate passband gain from the complex one-pole asymptote and check descending cutoff; RC low-pass also supports optional gain limits. RC high-pass measures the ascending -3 dB crossing; RL low-pass measures descending cutoff; series RLC measures the output-magnitude peak; inverting op-amp measures gain magnitude at 1 kHz against requested limits. All use same-IR simulation artifacts and fail closed on missing AC data. Synthesis feasibility remains analytical. Real RC low-pass ideal-source and loaded runs, buffered RC low-pass smoke verification, and inverting-op-amp nominal LTspice smoke verification are recorded. RC high-pass and RL smoke attempts timed out without raw/log data. The experimental RLC handler's 25-second smoke also timed out without raw/log output and failed closed. | Extend to requested-condition corners and other metrics; obtain real high-pass/RL/RLC evidence; retain fail-closed launch, raw-data, measurement, and limit behavior. |
 | 5. Bounded conventional refinement | **Partial: finite E-series search.** `--refine` requires `--simulate` and an explicit positive simulation budget. It ranks gain-feasible pairs first when requested, then by cutoff target/range distance and gain midpoint proximity; simulates each from the validated request; preserves per-candidate artifacts; and stops at first measured pass. | Broaden refinement strategies only with explicit candidate rules and budgets; preserve deterministic order, fail closed on simulator/measurement errors, and compare each measured result to its hard limit. |
 | 6. More behaviors and topologies | **Not implemented in the behavioral request path.** Other circuits currently exist as fixed examples. | Add validated behavior/topology request contracts and design rules with tests and simulator evidence per supported family. |
 | 7. Natural-language entry | **Not implemented.** Current behavioral entry accepts JSON only; the existing requirement-gathering prompt does not parse prose. | Translate language into a reviewable structured request and ask for missing required limits rather than inventing them. |

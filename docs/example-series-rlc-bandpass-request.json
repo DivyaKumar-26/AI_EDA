@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "topology": "series_rlc_bandpass",
+  "behavior": {
+    "resonance_hz": {"min": 1500.0, "max": 1700.0, "target": 1591.55}
+  },
+  "components": {
+    "resistance_ohm": {"min": 1000.0, "max": 1000.0, "series": "E12"},
+    "capacitance_f": {"min": 1e-7, "max": 1e-7, "series": "E12"},
+    "inductance_h": {"min": 0.1, "max": 0.1, "series": "E12"}
+  }
+}

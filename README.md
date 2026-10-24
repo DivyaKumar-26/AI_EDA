@@ -15,17 +15,26 @@ failed candidates, with RL available as an optional later proposal policy. Trans
 may be supplied when useful, but are not required when the selected topology defines the
 behavior.
 
-The implementation currently covers structured JSON synthesis for an RC low-pass: it searches
-E-series R/C values against explicit component and cutoff bounds, optionally includes nominal
-source/load resistance and a passband-gain range, returns a `CircuitIR`, and renders netlist and
-ASC artifacts from that IR. An explicit `--simulate` mode sends the same IR through LTspice,
+The implementation covers structured JSON synthesis for RC low-pass, RC high-pass, RL low-pass,
+an op-amp buffered RC low-pass, an inverting op-amp amplifier, and experimental series RLC
+band-pass requests. The established RC low-pass path searches E-series R/C values, optionally
+includes nominal source/load resistance and a passband-gain range, and remains backward
+compatible. High-pass and RL low-pass use a small topology dispatch with ideal source/open load
+and cutoff-only constraints. The buffered op-amp path uses the existing generic `CP_OPAMP` macro
+with an ideal source and open load. Series RLC searches explicit R/C/L bounds for a resonance range and
+measures the simulated output peak; it has no Q, source/load, or refinement support. The inverting
+op-amp path searches input/feedback resistor pairs for a gain-magnitude range and measures gain at
+1 kHz, with a 100 V/V model-safe cap. Each
+topology returns a `CircuitIR` and matching netlist/ASC. An
+explicit `--simulate` mode sends the same IR through LTspice,
 estimates low-frequency passband gain from complex AC samples using the one-pole asymptote,
 measures cutoff relative to it, and checks the requested
 cutoff and optional gain bounds. A bounded `--refine` mode searches allowed E-series R/C pairs
 under an explicit simulation budget. Loaded request behavior has regression coverage and a
 real LTspice run covering nominal finite source/load conditions, cutoff, and passband gain.
-Continuous optimization, operating-condition corners, and other behaviors/topologies remain
-unsupported in the request path. The six-example workflows remain separate.
+High-pass and RL paths do not yet support loaded conditions or bounded refinement. Continuous
+optimization, operating-condition corners, and other behaviors/topologies remain unsupported in
+the request path. The six-example workflows remain separate.
 
 ## Project goal
 
@@ -138,6 +147,15 @@ the inclusive 1500–1700 Hz range. The complex-asymptote passband estimate was
 candidate predicted 1606.0180621091279 Hz and gain 0.9009009009009008. The report retains
 `production_qualified: false`.
 
+The experimental RLC smoke was attempted once with a 25-second limit:
+
+```powershell
+python -m circuitpilot.design_request_cli --request docs/example-series-rlc-bandpass-request.json --simulate --output-dir output/hackathon_series_rlc_smoke_20261024 --ltspice D:\LTspice\LTspice.exe --timeout 25
+```
+
+It timed out without raw or log data; its verification report failed closed with no measured
+peak. The folder is a timeout diagnostic, not simulator evidence.
+
 `output/rc_behavior_loaded_20261024_run1` is preserved as a superseded diagnostic: it used the
 biased sweep-start estimate and reported cutoff 1621.894563077167 Hz and gain estimate
 0.8964299010900756. Do not use those figures as verification evidence; run2 contains the
@@ -167,6 +185,42 @@ Earlier folders `output/ltspice_26_1_1_asc_20261024`,
 `output/ltspice_26_1_1_asc_validated_20261024`, and
 `output/ltspice_26_1_1_asc_final_20261024` are partial diagnostic runs. Use the complete
 folder above as the six-design ASC evidence set.
+
+### First-order topology breadth smoke checks
+
+The previously verified RC low-pass request run at `output/rc_behavior_request_20261024_run2`
+remains the successful LTspice low-pass evidence. A new smoke invocation in
+`output/hackathon_rc_lowpass_smoke_20261024_retry` timed out after 120 seconds and produced no
+raw/log; it is a preserved diagnostic, not a replacement for the successful run.
+
+The new-topology smoke commands were:
+
+```powershell
+python -m circuitpilot.design_request_cli --request docs/example-rc-highpass-request.json --simulate --output-dir output/hackathon_rc_highpass_smoke_20261024 --ltspice D:\LTspice\LTspice.exe --timeout 30
+python -m circuitpilot.design_request_cli --request docs/example-rl-lowpass-request.json --simulate --output-dir output/hackathon_rl_lowpass_smoke_20261024_retry --ltspice D:\LTspice\LTspice.exe --timeout 20
+python -m circuitpilot.design_request_cli --request docs/example-opamp-rc-lowpass-request.json --simulate --output-dir output/hackathon_opamp_rc_lowpass_smoke_20261024 --ltspice D:\LTspice\LTspice.exe --timeout 25
+```
+
+The RC high-pass and RL low-pass smoke attempts timed out without raw or log data. The initial
+25-second buffered-op-amp smoke also timed out and remains a preserved diagnostic. A later
+LTspice run with a 120-second timeout completed successfully at
+[`output/hackathon_opamp_rc_lowpass_retry_120s_20261024`](output/hackathon_opamp_rc_lowpass_retry_120s_20261024/request-verification.json):
+201 AC points measured the cutoff at 1591.2274175955174 Hz against an analytical prediction of
+1591.5494309189537 Hz (−0.322013323 Hz, −0.020233%). The requested 1500–1700 Hz range passed;
+the [LTspice log](output/hackathon_opamp_rc_lowpass_retry_120s_20261024/design.log) is saved
+beside the report. This is nominal smoke verification only; `production_qualified` remains
+`false`. Regression tests cover the RC high-pass ascending crossing, RL low-pass generated
+circuit, and buffered RC simulation measurement seam. Real LTspice verification for high-pass
+and RL remains outstanding. Request reports keep `production_qualified: false`.
+
+The inverting-op-amp request initially timed out at 120 seconds with an AC-only source and a
+shorter sweep. A fresh retry matches the fixed example's `DC 0 AC 1` source and 10 Hz–100 MHz
+sweep. LTspice completed 701 AC points and measured 9.998896080913909 V/V at 1 kHz against the
+requested 9.5–10.5 V/V range. The [verification report](output/hackathon_inverting_opamp_smoke_retry_120s_20261024/request-verification.json)
+and [LTspice log](output/hackathon_inverting_opamp_smoke_retry_120s_20261024/design.log) are in
+`output/hackathon_inverting_opamp_smoke_retry_120s_20261024`; the failed run remains preserved
+in `output/hackathon_inverting_opamp_smoke_120s_20261024`. This is nominal smoke evidence only;
+`production_qualified` remains `false`.
 
 ### Historical completed artifacts
 
@@ -267,6 +321,11 @@ python -m circuitpilot.design_request_cli --request docs/example-rc-lowpass-requ
 python -m circuitpilot.design_request_cli --request docs/example-rc-lowpass-request.json --simulate --output-dir output/<new-request-run> --ltspice <path-to-LTspice.exe> --timeout 120
 python -m circuitpilot.design_request_cli --request docs/example-rc-lowpass-request.json --simulate --refine --budget 5 --output-dir output/<new-refinement-run> --ltspice <path-to-LTspice.exe> --timeout 120
 python -m circuitpilot.design_request_cli --request docs/example-rc-lowpass-loaded-request.json --simulate --output-dir output/<new-loaded-request-run> --ltspice <path-to-LTspice.exe> --timeout 120
+python -m circuitpilot.design_request_cli --request docs/example-rc-highpass-request.json --simulate --output-dir output/<new-highpass-run> --ltspice <path-to-LTspice.exe> --timeout 120
+python -m circuitpilot.design_request_cli --request docs/example-rl-lowpass-request.json --simulate --output-dir output/<new-rl-run> --ltspice <path-to-LTspice.exe> --timeout 120
+python -m circuitpilot.design_request_cli --request docs/example-series-rlc-bandpass-request.json --simulate --output-dir output/<new-series-rlc-run> --ltspice <path-to-LTspice.exe> --timeout 120
+python -m circuitpilot.design_request_cli --request docs/example-opamp-rc-lowpass-request.json --simulate --output-dir output/<new-opamp-rc-run> --ltspice <path-to-LTspice.exe> --timeout 120
+python -m circuitpilot.design_request_cli --request docs/example-inverting-opamp-request.json --simulate --output-dir output/<new-inverting-opamp-run> --ltspice <path-to-LTspice.exe> --timeout 120
 python -m circuitpilot.schematics_cli --export-only --output-root output/<new-asc-export-folder>
 python -m circuitpilot.schematics_cli --output-root output/<new-asc-run-folder> --reference-root output/<matching-cir-run-folder> --timeout 240
 python -m pytest -q
@@ -290,9 +349,18 @@ stop on the first measured pass, exhausted budget/candidate set, or simulator/me
 failure. Each attempt is preserved in a separate candidate folder with top-level history and
 summary reports. See [docs/rc-lowpass-request.md](docs/rc-lowpass-request.md) for ranking,
 stop rules, artifact set, and fail-closed behavior.
+The same CLI dispatches `rc_highpass`, `rl_lowpass`, `opamp_rc_lowpass`, and experimental
+`series_rlc_bandpass`, plus `inverting_opamp_amplifier`; see their example JSON files. The op-amp buffered RC low-pass uses the
+existing generic one-pole `CP_OPAMP` macro and exports `CP_OPAMP.asy` beside simulated ASC files.
+It supports only ideal-source/open-load cutoff checks. RC
+high-pass cutoff uses an ascending -3 dB crossing, while RL low-pass uses a descending crossing.
+The inverting op-amp demo checks gain magnitude at 1 kHz with an inclusive request range and a
+100 V/V limit imposed by the macro's finite gain-bandwidth. These additions currently support only ideal-source/open-load nominal checks, without gain/Q
+bounds, operating-condition corners, or refinement. Series RLC is an experimental handler and
+checks resonance-frequency bounds only.
 
 Available tests were run with `$env:PYTHONPATH='engine'; python -m unittest discover -s tests/unit -v`;
-all 84 tests passed. `python -m pytest -q` could not run because `pytest` is not installed in
+all 105 tests passed. `python -m pytest -q` could not run because `pytest` is not installed in
 the environment. The six-design LTspice evidence is complete at the paths above and received
 independent review with no actionable findings. The historical v1/v2 diagnostic notes do not
 establish a final design pass.
@@ -314,6 +382,8 @@ establish a final design pass.
   complex-AC asymptote gain and relative-cutoff measurements, hard verification, and request-run artifacts.
 - `engine/circuitpilot/rc_request_refinement.py`: bounded deterministic E-series candidate
   refinement, per-attempt evidence, and ordered history/summary reports.
+- `engine/circuitpilot/topology_requests.py`: small topology dispatch and RC high-pass/RL low-pass
+  synthesis plus experimental series RLC synthesis and nominal measurement handlers.
 - `engine/circuitpilot/schematic.py`: ASC rendering, symbol mapping, connectivity manifests,
   and support symbols.
 - `engine/circuitpilot/schematic_validation.py`: native LTspice `.net` IR pin/value checker.

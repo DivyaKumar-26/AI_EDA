@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "topology": "rl_lowpass",
+  "behavior": {
+    "cutoff_hz": {"min": 1500.0, "max": 1700.0, "target": 1591.55}
+  },
+  "components": {
+    "resistance_ohm": {"min": 1000.0, "max": 1000.0, "series": "E12"},
+    "inductance_h": {"min": 0.1, "max": 0.1, "series": "E12"}
+  }
+}

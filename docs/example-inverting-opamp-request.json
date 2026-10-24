@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "topology": "inverting_opamp_amplifier",
+  "behavior": {
+    "gain_magnitude": {"min": 9.5, "max": 10.5, "target": 10.0}
+  },
+  "components": {
+    "input_resistance_ohm": {"min": 10000.0, "max": 10000.0, "series": "E24"},
+    "feedback_resistance_ohm": {"min": 100000.0, "max": 100000.0, "series": "E24"}
+  }
+}

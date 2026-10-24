@@ -126,6 +126,38 @@ def _parse_complex(value_line: str) -> tuple[float, float]:
         raise SimulationError("Non-numeric complex value in LTspice raw file") from exc
 
 
+def measure_gain_magnitude_at_frequency(points: list[ACPoint], frequency_hz: float) -> float:
+    """Measure |V(out)/V(in)| at a requested frequency, interpolating in log frequency."""
+    if not math.isfinite(frequency_hz) or frequency_hz <= 0:
+        raise SimulationError("Gain measurement frequency must be finite and positive")
+    if len(points) < 2:
+        raise SimulationError("At least two AC points are required to measure gain")
+    gains: list[float] = []
+    previous_frequency = 0.0
+    for point in points:
+        if (not math.isfinite(point.frequency_hz) or point.frequency_hz <= previous_frequency
+                or not math.isfinite(point.input_magnitude) or point.input_magnitude <= 0
+                or not math.isfinite(point.output_magnitude) or point.output_magnitude < 0):
+            raise SimulationError("AC data contains invalid frequency or voltage magnitudes")
+        gain = point.output_magnitude / point.input_magnitude
+        if not math.isfinite(gain):
+            raise SimulationError("AC gain magnitude is outside the representable float range")
+        gains.append(gain)
+        previous_frequency = point.frequency_hz
+    if frequency_hz < points[0].frequency_hz or frequency_hz > points[-1].frequency_hz:
+        raise SimulationError("Requested gain frequency is outside the AC sweep")
+    for point, gain in zip(points, gains):
+        if math.isclose(point.frequency_hz, frequency_hz, rel_tol=1e-12, abs_tol=0.0):
+            return gain
+    for left, right, left_gain, right_gain in zip(points, points[1:], gains, gains[1:]):
+        if left.frequency_hz < frequency_hz < right.frequency_hz:
+            if left_gain < 0 or right_gain < 0:
+                raise SimulationError("AC gain magnitude is invalid")
+            fraction = math.log(frequency_hz / left.frequency_hz) / math.log(right.frequency_hz / left.frequency_hz)
+            return left_gain + fraction * (right_gain - left_gain)
+    raise SimulationError("Requested gain frequency could not be bracketed by AC data")
+
+
 def measure_cutoff_hz(points: list[ACPoint], target_db: float = -3.01029995664) -> float:
     """Find the unity-passband transfer cutoff, interpolating in log(f) and dB."""
     if len(points) < 2:
@@ -189,8 +221,10 @@ def estimate_one_pole_passband_gain(points: list[ACPoint]) -> float:
     return gain
 
 
-def measure_cutoff_relative_to_passband(points: list[ACPoint], passband_gain: float) -> float:
-    """Measure the descending -3 dB crossing relative to an estimated DC gain."""
+def measure_cutoff_relative_to_passband(
+    points: list[ACPoint], passband_gain: float, direction: str = "descending"
+) -> float:
+    """Measure a -3 dB crossing relative to passband, in the requested sweep direction."""
     if not math.isfinite(passband_gain) or passband_gain <= 0:
         raise SimulationError("measured passband gain must be finite and positive")
     normalized = []
@@ -201,7 +235,72 @@ def measure_cutoff_relative_to_passband(points: list[ACPoint], passband_gain: fl
         if not math.isfinite(output):
             raise SimulationError("normalized AC output is outside the representable float range")
         normalized.append(ACPoint(point.frequency_hz, 1.0, output))
-    return measure_cutoff_hz(normalized)
+    if direction == "descending":
+        return measure_cutoff_hz(normalized)
+    if direction != "ascending":
+        raise ValueError("cutoff direction must be 'ascending' or 'descending'")
+    return _measure_ascending_cutoff(normalized)
+
+
+def measure_peak_frequency_hz(points: list[ACPoint]) -> float:
+    """Estimate the frequency of a bracketed AC magnitude peak by local log-parabolic fit."""
+    if len(points) < 3:
+        raise SimulationError("At least three AC points are required to measure a response peak")
+    ratios = []
+    for point in points:
+        if not math.isfinite(point.input_magnitude) or point.input_magnitude <= 0:
+            raise SimulationError("AC input has no positive magnitude")
+        if not math.isfinite(point.output_magnitude) or point.output_magnitude < 0:
+            raise SimulationError("AC output magnitude is invalid")
+        ratio = point.output_magnitude / point.input_magnitude
+        if not math.isfinite(ratio):
+            raise SimulationError("AC transfer magnitude is outside the representable float range")
+        ratios.append(ratio)
+    peak_index = max(range(len(ratios)), key=ratios.__getitem__)
+    if peak_index == 0 or peak_index == len(points) - 1 or ratios[peak_index] <= 0:
+        raise SimulationError("AC sweep does not bracket a measurable interior response peak")
+    x0, x1, x2 = (math.log(points[index].frequency_hz)
+                  for index in (peak_index - 1, peak_index, peak_index + 1))
+    y0, y1, y2 = (math.log(max(ratios[index], 1e-300))
+                  for index in (peak_index - 1, peak_index, peak_index + 1))
+    h1, h2 = x1 - x0, x2 - x1
+    if h1 <= 0 or h2 <= 0:
+        raise SimulationError("AC frequencies do not bracket an interior peak")
+    a = ((y2 - y1) / h2 - (y1 - y0) / h1) / (h1 + h2)
+    b = (y1 - y0) / h1 + a * h1
+    if not math.isfinite(a) or not math.isfinite(b) or a >= 0:
+        raise SimulationError("AC samples do not form a concave local response peak")
+    offset = -b / (2.0 * a)
+    if not -h1 <= offset <= h2:
+        raise SimulationError("AC sweep does not bracket the fitted response peak")
+    peak_hz = math.exp(x1 + offset)
+    if not math.isfinite(peak_hz) or peak_hz <= 0:
+        raise SimulationError("measured response peak is not finite and positive")
+    return peak_hz
+
+
+def _measure_ascending_cutoff(points: list[ACPoint], target_db: float = -3.01029995664) -> float:
+    if len(points) < 2:
+        raise SimulationError("At least two AC points are required to measure cutoff")
+    level_db = []
+    for point in points:
+        if not math.isfinite(point.output_magnitude) or point.output_magnitude < 0:
+            raise SimulationError("AC output magnitude is invalid")
+        level_db.append(20.0 * math.log10(point.output_magnitude) if point.output_magnitude > 0 else -math.inf)
+    if level_db[0] >= target_db:
+        raise SimulationError("AC sweep starts above -3.0103 dB; high-pass cutoff may lie below the lower sweep limit")
+    for left, right, left_db, right_db in zip(points, points[1:], level_db, level_db[1:]):
+        if left_db <= target_db and right_db >= target_db:
+            if left_db == right_db:
+                return math.sqrt(left.frequency_hz * right.frequency_hz)
+            fraction = (target_db - left_db) / (right_db - left_db)
+            log_frequency = math.log(left.frequency_hz) + fraction * (
+                math.log(right.frequency_hz) - math.log(left.frequency_hz)
+            )
+            cutoff = math.exp(log_frequency)
+            if math.isfinite(cutoff) and cutoff > 0:
+                return cutoff
+    raise SimulationError("AC sweep did not contain an ascending -3.0103 dB cutoff crossing")
 
 
 def discover_ltspice(explicit_path: str | None = None) -> Path:
