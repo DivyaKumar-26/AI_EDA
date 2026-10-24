@@ -1,0 +1,13 @@
+* CircuitPilot common-source NMOS amplifier
+VDD vdd 0 12
+VIN in 0 DC 0 AC 1
+CIN in gate 10u
+RG1 vdd gate 1Meg
+RG2 gate 0 390k
+RD vdd out 1k
+RS source 0 470
+CS source 0 100u
+M1 out gate source source CP_NMOS W=10u L=1u
+.model CP_NMOS NMOS(VTO=2 KP=10m LAMBDA=0.02 CGSO=10n CGDO=5n)
+.ac dec 100 1 100Meg
+.end

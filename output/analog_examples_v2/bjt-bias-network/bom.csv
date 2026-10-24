@@ -1,0 +1,6 @@
+﻿Reference,Value / model,Quantity
+Q1,"NPN, generic LTspice model",1
+RC,"4.7 kΩ, 1%",1
+RE,"1 kΩ, 1%",1
+RB1,"100 kΩ, 1%",1
+RB2,"22 kΩ, 1%",1

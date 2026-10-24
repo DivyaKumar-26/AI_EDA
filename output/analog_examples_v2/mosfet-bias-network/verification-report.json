@@ -1,0 +1,49 @@
+{
+  "design_id": "mosfet-bias-network",
+  "title": "NMOS divider bias network",
+  "topology": "bias_network",
+  "description": "Divider-biased NMOS with source degeneration; DC sweep checks bias across supply variation.",
+  "simulation_status": "completed",
+  "verification_status": "measured_with_topology_checks",
+  "design_pass": true,
+  "simulator": {
+    "name": "LTspice",
+    "executable": "C:\\Users\\Harshit\\AppData\\Local\\Programs\\ADI\\LTspice\\LTspice.exe",
+    "mode": "batch"
+  },
+  "analysis": "Operating point + VDD DC sweep (9\u201315 V)",
+  "artifacts": {
+    "netlist": "mosfet-bias-network.cir",
+    "bom": "bom.csv",
+    "raw": "mosfet-bias-network.raw",
+    "log": "mosfet-bias-network.log"
+  },
+  "measurements": {
+    "sweep_points": 13,
+    "sweep_supply_min_v": 9.0,
+    "sweep_supply_max_v": 15.0,
+    "nominal_supply_v": 12.0,
+    "nominal_bias": {
+      "vgs_v": 2.205737304289234,
+      "vds_v": 8.368258126211833,
+      "drain_current_a_estimate": 0.0024705727032572553
+    },
+    "sweep_summary": {
+      "active_region_points": 13,
+      "total_points": 13,
+      "min_current_a": 0.0008580333369983861,
+      "max_current_a": 0.004135537211991402
+    },
+    "topology_checks": {
+      "positive_drain_current": true,
+      "vgs_above_model_threshold": true,
+      "mosfet_in_saturation": true,
+      "active_region_across_entire_supply_sweep": true
+    },
+    "topology_checks_pass": true
+  },
+  "model_limitations": [
+    "The MOSFET uses a self-contained generic Level 1 model; real-device curves, temperature, and tolerances are not represented."
+  ],
+  "verification_note": "design_pass covers only the documented operating-region checks, not a product-level performance specification."
+}

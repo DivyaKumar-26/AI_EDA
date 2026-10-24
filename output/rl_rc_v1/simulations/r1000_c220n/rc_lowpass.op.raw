@@ -1,0 +1,20 @@
+Title: D:\circuit_design\circuit_Design\output\rl_rc_v1\simulations\r1000_c220n\rc_lowpass.cir
+Date: Sat Oct 24 17:06:04 2026
+Plotname: Operating Point
+Flags: real
+No. Variables: 5
+No. Points:            1
+Offset:    0.0000000000000000e+00
+Command: Linear Technology Corporation LTspice
+Variables:
+	0	V(in)	voltage
+	1	V(out)	voltage
+	2	I(C1)	device_current
+	3	I(R1)	device_current
+	4	I(V1)	device_current
+Values:
+0		0.000000000000000e+00
+	0.000000000000000e+00
+	0.000000000000000e+00
+	0.000000000000000e+00
+	0.000000000000000e+00

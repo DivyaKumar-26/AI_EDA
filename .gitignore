@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+/output/*
+!/output/analog_examples_v2/
+!/output/rl_rc_v1/
+*.log

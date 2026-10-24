@@ -1,0 +1,10 @@
+* CircuitPilot NPN divider bias network
+VCC vcc 0 12
+RB1 vcc base 100k
+RB2 base 0 22k
+RC vcc collector 4.7k
+RE emitter 0 1k
+Q1 collector base emitter CP_NPN
+.model CP_NPN NPN(IS=1e-14 BF=150 VAF=100 CJE=10p CJC=5p TF=0.3n)
+.dc VCC 9 15 0.5
+.end

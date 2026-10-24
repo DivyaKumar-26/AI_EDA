@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CircuitPilot design request",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "topology": {
+          "const": "rc_lowpass"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "resistance_ohm": {
+              "type": "number",
+              "minimum": 1e-06,
+              "maximum": 1000000000000.0
+            },
+            "capacitance_f": {
+              "type": "number",
+              "minimum": 1e-15,
+              "maximum": 1000.0
+            }
+          },
+          "required": [
+            "resistance_ohm",
+            "capacitance_f"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "topology",
+        "parameters"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "topology": {
+          "const": "common-source-mosfet-amplifier"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "topology",
+        "parameters"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "topology": {
+          "const": "common-emitter-bjt-amplifier"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "topology",
+        "parameters"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "topology": {
+          "const": "inverting-opamp-amplifier"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "topology",
+        "parameters"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "topology": {
+          "const": "non-inverting-opamp-amplifier"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "topology",
+        "parameters"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "topology": {
+          "const": "mosfet-bias-network"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "topology",
+        "parameters"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "topology": {
+          "const": "bjt-bias-network"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "topology",
+        "parameters"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

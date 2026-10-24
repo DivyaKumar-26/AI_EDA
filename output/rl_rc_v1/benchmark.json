@@ -1,0 +1,213 @@
+{
+  "benchmark_id": "rc_lowpass_fixed_target_grid_v1",
+  "boundary": "One fixed target and a 3x3 discrete R/C grid; no claim of generalization to other topologies or target ranges.",
+  "simulator": "LTspice ASCII batch AC output",
+  "simulator_calls_for_measurement_dataset": 9,
+  "target_cutoff_hz": 1591.5494309189537,
+  "tolerance_percent": 1.0,
+  "seed": 20261024,
+  "episodes": 3000,
+  "measurement_dataset_sha256": "1d0c918045c57b712780337858f76d76701f12bf92dda83455ee0348c58f3c3a",
+  "measured_candidates": [
+    {
+      "state": [
+        0,
+        0
+      ],
+      "resistance_ohm": 680.0,
+      "capacitance_f": 4.7e-08,
+      "simulated_cutoff_hz": 4979.550041232938,
+      "analytical_cutoff_hz": 4979.816742549912,
+      "simulation_report": "simulations\\r680_c47n\\verification-report.json"
+    },
+    {
+      "state": [
+        0,
+        1
+      ],
+      "resistance_ohm": 680.0,
+      "capacitance_f": 1e-07,
+      "simulated_cutoff_hz": 2340.473680845795,
+      "analytical_cutoff_hz": 2340.5138689984637,
+      "simulation_report": "simulations\\r680_c100n\\verification-report.json"
+    },
+    {
+      "state": [
+        0,
+        2
+      ],
+      "resistance_ohm": 680.0,
+      "capacitance_f": 2.2e-07,
+      "simulated_cutoff_hz": 1063.8092321722388,
+      "analytical_cutoff_hz": 1063.869940453846,
+      "simulation_report": "simulations\\r680_c220n\\verification-report.json"
+    },
+    {
+      "state": [
+        1,
+        0
+      ],
+      "resistance_ohm": 1000.0,
+      "capacitance_f": 4.7e-08,
+      "simulated_cutoff_hz": 3386.25088192633,
+      "analytical_cutoff_hz": 3386.275384933943,
+      "simulation_report": "simulations\\r1000_c47n\\verification-report.json"
+    },
+    {
+      "state": [
+        1,
+        1
+      ],
+      "resistance_ohm": 1000.0,
+      "capacitance_f": 1e-07,
+      "simulated_cutoff_hz": 1591.4870757015626,
+      "analytical_cutoff_hz": 1591.5494309189564,
+      "simulation_report": "simulations\\r1000_c100n\\verification-report.json"
+    },
+    {
+      "state": [
+        1,
+        2
+      ],
+      "resistance_ohm": 1000.0,
+      "capacitance_f": 2.2e-07,
+      "simulated_cutoff_hz": 723.4205900356251,
+      "analytical_cutoff_hz": 723.4315595086159,
+      "simulation_report": "simulations\\r1000_c220n\\verification-report.json"
+    },
+    {
+      "state": [
+        2,
+        0
+      ],
+      "resistance_ohm": 1500.0,
+      "capacitance_f": 4.7e-08,
+      "simulated_cutoff_hz": 2257.3789678404987,
+      "analytical_cutoff_hz": 2257.5169232892927,
+      "simulation_report": "simulations\\r1500_c47n\\verification-report.json"
+    },
+    {
+      "state": [
+        2,
+        1
+      ],
+      "resistance_ohm": 1500.0,
+      "capacitance_f": 1e-07,
+      "simulated_cutoff_hz": 1060.9640177868243,
+      "analytical_cutoff_hz": 1061.0329539459697,
+      "simulation_report": "simulations\\r1500_c100n\\verification-report.json"
+    },
+    {
+      "state": [
+        2,
+        2
+      ],
+      "resistance_ohm": 1500.0,
+      "capacitance_f": 2.2e-07,
+      "simulated_cutoff_hz": 482.259522972956,
+      "analytical_cutoff_hz": 482.28770633907675,
+      "simulation_report": "simulations\\r1500_c220n\\verification-report.json"
+    }
+  ],
+  "learned_greedy_policy_all_start_states": {
+    "episodes": [
+      {
+        "start": [
+          0,
+          0
+        ],
+        "success": true,
+        "steps": 2,
+        "final_error_percent": 0.003917893857376644
+      },
+      {
+        "start": [
+          0,
+          1
+        ],
+        "success": true,
+        "steps": 1,
+        "final_error_percent": 0.003917893857376644
+      },
+      {
+        "start": [
+          0,
+          2
+        ],
+        "success": true,
+        "steps": 2,
+        "final_error_percent": 0.003917893857376644
+      },
+      {
+        "start": [
+          1,
+          0
+        ],
+        "success": true,
+        "steps": 1,
+        "final_error_percent": 0.003917893857376644
+      },
+      {
+        "start": [
+          1,
+          1
+        ],
+        "success": true,
+        "steps": 0,
+        "final_error_percent": 0.003917893857376644
+      },
+      {
+        "start": [
+          1,
+          2
+        ],
+        "success": true,
+        "steps": 1,
+        "final_error_percent": 0.003917893857376644
+      },
+      {
+        "start": [
+          2,
+          0
+        ],
+        "success": true,
+        "steps": 2,
+        "final_error_percent": 0.003917893857376644
+      },
+      {
+        "start": [
+          2,
+          1
+        ],
+        "success": true,
+        "steps": 1,
+        "final_error_percent": 0.003917893857376644
+      },
+      {
+        "start": [
+          2,
+          2
+        ],
+        "success": true,
+        "steps": 2,
+        "final_error_percent": 0.003917893857376644
+      }
+    ],
+    "successes": 9,
+    "total": 9,
+    "success_rate": 1.0,
+    "mean_steps": 1.3333333333333333
+  },
+  "random_policy_same_starts_50_repeats": {
+    "episodes": 450,
+    "successes": 296,
+    "success_rate": 0.6577777777777778,
+    "mean_steps": 4.9
+  },
+  "grid_oracle_best_state": [
+    1,
+    1
+  ],
+  "grid_oracle_error_percent": 0.003917893857376644,
+  "interpretation": "The policy is compared with a random walk on the same finite measured grid. The exhaustive grid oracle is an upper bound and is not an RL policy."
+}

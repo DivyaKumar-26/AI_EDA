@@ -4,13 +4,15 @@
 
 CircuitPilot is a planned VS Code extension that turns electrical design requirements into candidate analog circuits, generates editable LTspice schematics and SPICE netlists, runs local simulations, optimizes component values, and checks simulated performance against explicit constraints.
 
-> **Project status:** Early-stage project / roadmap. Features described below are planned unless they have been implemented and tested in this repository. CircuitPilot must not claim a design passes until the required measurements have been obtained from an actual simulation and all hard constraints have been evaluated.
+> **Project status:** Early-stage project. Implemented items below are limited to the Python netlist engine, six LTspice examples, and a fixed-grid RC policy experiment. CircuitPilot must not claim a design passes until required measurements have been obtained from an actual simulation and all stated hard constraints have been evaluated.
 
-### Implemented foundation: analytical RC low-pass
+See the [plain-language implementation plan](docs/implementation-plan.md) for the staged path from a verified RC workflow to an optional RL policy.
 
-The Python engine currently supports a validated, unloaded first-order RC low-pass workflow. Its canonical circuit representation generates a deterministic SPICE netlist and reports the ideal analytical cutoff frequency. Component inputs use SI units (ohms and farads). This milestone does not run LTspice, create an `.asc` schematic, or verify simulated behavior; the printed cutoff is explicitly analytical.
+### Implemented foundation: RC low-pass and simulation examples
 
-The Python package lives in the project root, the directory containing this `README.md`. If the project is nested inside a container directory, use the inner project root; the outer container does not contain the Python package. From the project root, with Python 3.10 or newer:
+The Python engine supports a validated first-order RC low-pass workflow, six deterministic LTspice example designs, a reusable `CircuitIR`/topology registry, and a tabular RC tuning experiment. The default RC CLI reports the ideal analytical cutoff; its opt-in simulation mode runs LTspice. The example library covers MOSFET/BJT common-source/common-emitter amplifiers, inverting/non-inverting op-amp amplifiers, and MOSFET/BJT divider bias networks. It does not create `.asc` schematics or evaluate arbitrary user-supplied product constraints.
+
+The Python engine package is under `engine/circuitpilot`. The project root is the directory containing this `README.md`. If the project is nested inside a container directory, use the inner project root; the outer container does not contain the Python package. From the project root, with Python 3.10 or newer:
 
 ```powershell
 Set-Location <project-root>
@@ -18,7 +20,48 @@ $env:PYTHONPATH = "engine"
 python -m circuitpilot --r 1000 --c 1e-7
 ```
 
-The example uses 1 kΩ and 100 nF, giving an ideal cutoff near 1.59 kHz. The generated `.ac` directive always sweeps from 1 Hz through 1 MHz; the current workflow does not adjust or inspect that sweep to measure cutoff. The reported cutoff comes from the analytical formula. To run the focused unit tests, install `pytest` and run `python -m pytest` from the project root.
+The example uses 1 kΩ and 100 nF, giving an ideal cutoff near 1.59 kHz. The generated `.ac` directive always sweeps from 1 Hz through 1 MHz. The analytical-only command does not run or inspect that sweep.
+
+To run the netlist in an installed LTspice for Windows and measure its simulated -3.0103 dB cutoff, use:
+
+```powershell
+python -m circuitpilot --r 1000 --c 1e-7 --simulate --output-dir output/ltspice_run
+```
+
+LTspice is discovered from `PATH` or its standard per-user install location; pass `--ltspice <path-to-LTspice.exe>` if automatic discovery does not find it. Simulation writes `rc_lowpass.cir`, LTspice `.raw`/`.log` outputs, and `verification-report.json` into the selected directory. Existing artifacts with those names are not overwritten. The cutoff is measured from `|V(out)/V(in)|` against the unity passband in log-frequency and dB. Since the sweep is fixed at 1 Hz to 1 MHz, a cutoff below the lower limit is reported as outside the sweep, and a cutoff above the upper limit has no measured crossing. The report distinguishes a completed simulation from design verification: without a hard target constraint, its verification status is `not_evaluated` and `design_pass` is false. The `.cir` netlist is the simulation input; an editable `.asc` schematic is not generated in this milestone.
+
+To run focused unit tests, install `pytest` and run `python -m pytest` from the project root.
+
+### Reusable topology API and RC policy experiment
+
+`CircuitIR` is the deterministic netlist representation; `TopologyRegistry` validates topology parameters against declared schemas before calling registered factories. The registry currently contains the RC low-pass topology plus the six example topologies. The JSON schemas in `schemas/` describe the current request shape and IR structure; this is an extensible engine seam, not general-purpose analog synthesis.
+
+The optional RC policy experiment builds a measured 3×3 R/C candidate grid by running LTspice, then trains dependency-free tabular Q-learning on those measurements:
+
+```powershell
+python -m circuitpilot.train_rc_policy --output-root output/rl_rc_v1
+```
+
+Pass `--ltspice <path-to-LTspice.exe>` if discovery fails. This takes multiple simulator launches and can take several minutes. It preserves existing candidate artifacts and writes a checkpoint, measurement-backed benchmark, and per-candidate simulation outputs. The v1 policy is limited to one fixed target and one finite RC grid; it does not generalize across targets or topologies. Its benchmark compares a learned greedy policy with a random walk on that same grid and an exhaustive-grid oracle, not a broad held-out benchmark. LTspice measurements ground the environment rewards; the Q-learning episodes replay the finite measured table rather than launching a simulator on every action.
+
+The current recorded run in `output/rl_rc_v1/benchmark.json` used nine LTspice measurements for a 1.59155 kHz target. The learned greedy policy reached the 1% target tolerance from 9/9 grid states (mean 1.33 actions); the seeded random-walk baseline reached it on 296/450 runs (65.8%, mean 4.90 actions). The best grid point was within 0.00392% of target. These figures describe this finite benchmark only.
+
+### LTspice example amplifier and bias suite
+
+The example suite writes a SPICE netlist, BOM, raw simulation output, LTspice log, and measurement report for each selected design. All six run by default, each in a new subfolder; existing per-design folders are never overwritten.
+
+```powershell
+python -m circuitpilot.examples_cli --list
+python -m circuitpilot.examples_cli --output-root output/analog_examples
+```
+
+Run a single example by repeating `--design` as needed, for example:
+
+```powershell
+python -m circuitpilot.examples_cli --design inverting-opamp-amplifier --output-root output/analog_examples
+```
+
+Amplifier reports include operating-point voltages, AC gain and phase at 1 kHz, peak gain, and interpolated −3 dB bandwidth. MOSFET and BJT amplifier reports also include bias checks. The bias network designs perform 9–15 V DC sweeps and check the transistor operating region at each sweep point. A report's `design_pass` reflects only the stated topology checks; it does not qualify the design against a product specification. The op-amp examples use a self-contained one-pole behavioral model and omit important real-device limits such as slew rate, input offset, supply rails, and output current limiting. MOSFET and BJT examples use generic self-contained models. These are simulation examples for exploration, not production-ready designs. The `.cir` files are the editable design artifacts; no `.asc` schematic is emitted.
 
 ## Vision
 

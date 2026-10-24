@@ -65,6 +65,21 @@ class RCLowpassTests(unittest.TestCase):
         self.assertEqual(bad.returncode, 2)
         self.assertIn("resistance_ohm must be a finite positive number", bad.stderr)
 
+    def test_cli_simulation_requires_existing_executable(self):
+        root = Path(__file__).resolve().parents[2]
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(root / "engine")
+        result = subprocess.run(
+            [sys.executable, "-m", "circuitpilot", "--r", "1000", "--c", "1e-7", "--simulate", "--ltspice", str(root / "missing.exe")],
+            cwd=root,
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("LTspice executable not found", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

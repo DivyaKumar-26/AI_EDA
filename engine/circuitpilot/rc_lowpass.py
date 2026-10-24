@@ -6,6 +6,8 @@ from dataclasses import dataclass
 import math
 import sys
 
+from .ir import CircuitElement, CircuitIR
+
 
 def _positive_finite(value: float, label: str) -> float:
     try:
@@ -34,14 +36,16 @@ class RCFilter:
 
     def to_spice(self) -> str:
         """Render deterministic LTspice-compatible SPICE for AC analysis."""
-        return (
-            "* CircuitPilot first-order RC low-pass\n"
-            "V1 in 0 AC 1\n"
-            f"R1 in out {format_spice_number(self.resistance_ohm)}\n"
-            f"C1 out 0 {format_spice_number(self.capacitance_f)}\n"
-            ".ac dec 100 1 1Meg\n"
-            ".end\n"
+        ir = CircuitIR(
+            title="CircuitPilot first-order RC low-pass",
+            elements=(
+                CircuitElement.from_statement("V1 in 0 AC 1"),
+                CircuitElement.from_statement(f"R1 in out {format_spice_number(self.resistance_ohm)}"),
+                CircuitElement.from_statement(f"C1 out 0 {format_spice_number(self.capacitance_f)}"),
+            ),
+            directives=(".ac dec 100 1 1Meg",),
         )
+        return ir.render()
 
 
 def cutoff_frequency_hz(resistance_ohm: float, capacitance_f: float) -> float:

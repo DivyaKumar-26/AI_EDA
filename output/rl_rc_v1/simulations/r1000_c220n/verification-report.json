@@ -1,0 +1,19 @@
+{
+  "simulation_status": "completed",
+  "verification_status": "not_evaluated",
+  "design_pass": false,
+  "simulator": {
+    "name": "LTspice",
+    "executable": "C:\\Users\\Harshit\\AppData\\Local\\Programs\\ADI\\LTspice\\LTspice.exe",
+    "mode": "batch AC analysis"
+  },
+  "netlist": "rc_lowpass.cir",
+  "analysis": "AC sweep; cutoff is interpolated at -3.0103 dB transfer magnitude (V(out)/V(in)) relative to unity passband",
+  "measurements": {
+    "simulated_cutoff_hz": 723.4205900356251,
+    "analytical_cutoff_hz": 723.4315595086159,
+    "cutoff_error_percent": -0.0015163110935176591,
+    "ac_points": 601
+  },
+  "note": "Simulation completed and a cutoff was measured. No hard target constraint was supplied, so design pass/fail was not evaluated."
+}

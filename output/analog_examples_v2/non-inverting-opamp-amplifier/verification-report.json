@@ -1,0 +1,48 @@
+{
+  "design_id": "non-inverting-opamp-amplifier",
+  "title": "Non-inverting op-amp amplifier",
+  "topology": "amplifier",
+  "description": "Non-inverting gain-of-eleven stage using a self-contained one-pole behavioral op-amp macro.",
+  "simulation_status": "completed",
+  "verification_status": "measured_with_topology_checks",
+  "design_pass": true,
+  "simulator": {
+    "name": "LTspice",
+    "executable": "C:\\Users\\Harshit\\AppData\\Local\\Programs\\ADI\\LTspice\\LTspice.exe",
+    "mode": "batch"
+  },
+  "analysis": "AC + operating point",
+  "artifacts": {
+    "netlist": "non-inverting-opamp-amplifier.cir",
+    "bom": "bom.csv",
+    "raw": "non-inverting-opamp-amplifier.raw",
+    "log": "non-inverting-opamp-amplifier.log"
+  },
+  "measurements": {
+    "ac_points": 701,
+    "peak_gain_magnitude_v_per_v": 10.998788372604613,
+    "peak_gain_db": 20.826896917575116,
+    "peak_gain_frequency_hz": 10.0,
+    "gain_at_1khz_magnitude_v_per_v": 10.998785744054006,
+    "gain_at_1khz_db": 20.826894841773452,
+    "phase_at_1khz_degrees": -0.03961363181457351,
+    "minus_3db_low_cutoff_hz": null,
+    "minus_3db_high_cutoff_hz": 1446354.7476141814,
+    "bandwidth_hz": null,
+    "operating_point_v": {
+      "input": 0.0,
+      "output": 0.0
+    },
+    "ideal_closed_loop_gain_magnitude_v_per_v": 11.0,
+    "gain_at_1khz_error_percent": -0.011038690418129316,
+    "topology_checks": {
+      "gain_at_1khz_within_5_percent_of_resistor_ratio": true
+    },
+    "topology_checks_pass": true
+  },
+  "model_limitations": [
+    "CP_OPAMP is a generic one-pole behavioral model, not a vendor device model.",
+    "The macro has a fixed open-loop gain and pole, soft output limiting, and simplified output resistance; it omits supply pins, slew rate, noise, input offset/bias current, output current limits, and detailed stability behavior."
+  ],
+  "verification_note": "design_pass covers only the documented operating-region checks, not a product-level performance specification."
+}

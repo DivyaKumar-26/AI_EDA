@@ -1,0 +1,53 @@
+{
+  "design_id": "common-source-mosfet-amplifier",
+  "title": "Common-source MOSFET amplifier",
+  "topology": "amplifier",
+  "description": "NMOS common-source voltage amplifier with divider gate bias and bypassed source resistor.",
+  "simulation_status": "completed",
+  "verification_status": "measured_with_topology_checks",
+  "design_pass": true,
+  "simulator": {
+    "name": "LTspice",
+    "executable": "C:\\Users\\Harshit\\AppData\\Local\\Programs\\ADI\\LTspice\\LTspice.exe",
+    "mode": "batch"
+  },
+  "analysis": "AC + operating point",
+  "artifacts": {
+    "netlist": "common-source-mosfet-amplifier.cir",
+    "bom": "bom.csv",
+    "raw": "common-source-mosfet-amplifier.raw",
+    "log": "common-source-mosfet-amplifier.log"
+  },
+  "measurements": {
+    "ac_points": 801,
+    "peak_gain_magnitude_v_per_v": 23.0416284641284,
+    "peak_gain_db": 27.250263390850357,
+    "peak_gain_frequency_hz": 363078.054770095,
+    "gain_at_1khz_magnitude_v_per_v": 23.02323641374475,
+    "gain_at_1khz_db": 27.24332746131871,
+    "phase_at_1khz_degrees": -177.8931519655316,
+    "minus_3db_low_cutoff_hz": 39.83633900193427,
+    "minus_3db_high_cutoff_hz": null,
+    "bandwidth_hz": null,
+    "operating_point_v": {
+      "gate": 3.366906474810697,
+      "source": 1.161170293487687,
+      "drain": 9.529424907472892
+    },
+    "bias": {
+      "vgs_v": 2.20573618132301,
+      "vds_v": 8.368254613985204,
+      "drain_current_a_estimate": 0.002470575092526994
+    },
+    "topology_checks": {
+      "positive_drain_current": true,
+      "vgs_above_model_threshold": true,
+      "mosfet_not_in_cutoff_or_triode": true
+    },
+    "topology_checks_pass": true
+  },
+  "model_limitations": [
+    "The MOSFET uses a self-contained generic Level 1 model; real-device curves, temperature, and tolerances are not represented."
+  ],
+  "verification_note": "design_pass covers only the documented operating-region checks, not a product-level performance specification."
+}

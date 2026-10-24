@@ -1,0 +1,49 @@
+{
+  "design_id": "bjt-bias-network",
+  "title": "NPN divider bias network",
+  "topology": "bias_network",
+  "description": "Divider-biased NPN with emitter degeneration; DC sweep checks bias across supply variation.",
+  "simulation_status": "completed",
+  "verification_status": "measured_with_topology_checks",
+  "design_pass": true,
+  "simulator": {
+    "name": "LTspice",
+    "executable": "C:\\Users\\Harshit\\AppData\\Local\\Programs\\ADI\\LTspice\\LTspice.exe",
+    "mode": "batch"
+  },
+  "analysis": "Operating point + VCC DC sweep (9\u201315 V)",
+  "artifacts": {
+    "netlist": "bjt-bias-network.cir",
+    "bom": "bom.csv",
+    "raw": "bjt-bias-network.raw",
+    "log": "bjt-bias-network.log"
+  },
+  "measurements": {
+    "sweep_points": 13,
+    "sweep_supply_min_v": 9.0,
+    "sweep_supply_max_v": 15.0,
+    "nominal_supply_v": 12.0,
+    "nominal_bias": {
+      "vbe_v": 0.6617190274785298,
+      "vce_v": 4.362249599189706,
+      "collector_current_a_estimate": 0.0013384466387080319
+    },
+    "sweep_summary": {
+      "active_region_points": 13,
+      "total_points": 13,
+      "min_current_a": 0.0008661365779394491,
+      "max_current_a": 0.0018140376308256568
+    },
+    "topology_checks": {
+      "positive_collector_current": true,
+      "forward_biased_base_emitter": true,
+      "bjt_not_saturated": true,
+      "active_region_across_entire_supply_sweep": true
+    },
+    "topology_checks_pass": true
+  },
+  "model_limitations": [
+    "The BJT uses a self-contained generic model; real-device gain spread, temperature, and tolerances are not represented."
+  ],
+  "verification_note": "design_pass covers only the documented operating-region checks, not a product-level performance specification."
+}

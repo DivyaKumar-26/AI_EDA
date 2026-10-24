@@ -1,0 +1,25 @@
+Title: D:\circuit_design\circuit_Design\output\analog_examples_v2\inverting-opamp-amplifier\inverting-opamp-amplifier.cir
+Date: Sat Oct 24 17:05:17 2026
+Plotname: Operating Point
+Flags: real
+No. Variables: 7
+No. Points:            1
+Offset:    0.0000000000000000e+00
+Command: Linear Technology Corporation LTspice
+Backannotation: xu1 inp inm out
+Variables:
+	0	V(in)	voltage
+	1	V(out)	voltage
+	2	V(summing)	voltage
+	3	I(RF)	device_current
+	4	I(RIN)	device_current
+	5	I(VIN)	device_current
+	6	Ix(xu1:out)	subckt_current
+Values:
+0		0.000000000000000e+00
+	0.000000000000000e+00
+	0.000000000000000e+00
+	0.000000000000000e+00
+	0.000000000000000e+00
+	0.000000000000000e+00
+	0.000000000000000e+00

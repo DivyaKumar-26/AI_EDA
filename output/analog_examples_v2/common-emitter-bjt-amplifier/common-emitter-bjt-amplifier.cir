@@ -1,0 +1,13 @@
+* CircuitPilot common-emitter NPN amplifier
+VCC vcc 0 12
+VIN in 0 DC 0 AC 1
+CIN in base 10u
+RB1 vcc base 100k
+RB2 base 0 22k
+RC vcc out 4.7k
+RE emitter 0 1k
+CE emitter 0 100u
+Q1 out base emitter CP_NPN
+.model CP_NPN NPN(IS=1e-14 BF=150 VAF=100 CJE=10p CJC=5p TF=0.3n)
+.ac dec 100 1 100Meg
+.end

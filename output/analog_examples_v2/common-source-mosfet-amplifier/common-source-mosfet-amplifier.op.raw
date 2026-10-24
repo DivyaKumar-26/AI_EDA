@@ -1,0 +1,44 @@
+Title: D:\circuit_design\circuit_Design\output\analog_examples_v2\common-source-mosfet-amplifier\common-source-mosfet-amplifier.cir
+Date: Sat Oct 24 17:05:14 2026
+Plotname: Operating Point
+Flags: real
+No. Variables: 17
+No. Points:            1
+Offset:    0.0000000000000000e+00
+Command: Linear Technology Corporation LTspice
+Variables:
+	0	V(gate)	voltage
+	1	V(in)	voltage
+	2	V(out)	voltage
+	3	V(source)	voltage
+	4	V(vdd)	voltage
+	5	I(CIN)	device_current
+	6	I(CS)	device_current
+	7	I(RD)	device_current
+	8	I(RG1)	device_current
+	9	I(RG2)	device_current
+	10	I(RS)	device_current
+	11	I(VDD)	device_current
+	12	I(VIN)	device_current
+	13	Ib(M1)	device_current
+	14	Id(M1)	device_current
+	15	Ig(M1)	device_current
+	16	Is(M1)	device_current
+Values:
+0		3.366906474810697e+00
+	0.000000000000000e+00
+	9.529424907472892e+00
+	1.161170293487687e+00
+	1.200000000000000e+01
+	-3.366906474810697e-17
+	1.161170293487687e-16
+	2.470575092527108e-03
+	8.633093525189302e-06
+	8.633093525155633e-06
+	2.470575092526994e-03
+	-2.479208186052298e-03
+	3.366906474810697e-17
+	-8.378254613985204e-12
+	2.470575094080566e-03
+	0.000000000000000e+00
+	-2.470575085702311e-03

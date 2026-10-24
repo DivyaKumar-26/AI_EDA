@@ -1,0 +1,53 @@
+{
+  "design_id": "common-emitter-bjt-amplifier",
+  "title": "Common-emitter BJT amplifier",
+  "topology": "amplifier",
+  "description": "NPN common-emitter voltage amplifier with divider base bias and bypassed emitter resistor.",
+  "simulation_status": "completed",
+  "verification_status": "measured_with_topology_checks",
+  "design_pass": true,
+  "simulator": {
+    "name": "LTspice",
+    "executable": "C:\\Users\\Harshit\\AppData\\Local\\Programs\\ADI\\LTspice\\LTspice.exe",
+    "mode": "batch"
+  },
+  "analysis": "AC + operating point",
+  "artifacts": {
+    "netlist": "common-emitter-bjt-amplifier.cir",
+    "bom": "bom.csv",
+    "raw": "common-emitter-bjt-amplifier.raw",
+    "log": "common-emitter-bjt-amplifier.log"
+  },
+  "measurements": {
+    "ac_points": 801,
+    "peak_gain_magnitude_v_per_v": 229.22902387341807,
+    "peak_gain_db": 47.20539210098985,
+    "peak_gain_frequency_hz": 33113.11214825864,
+    "gain_at_1khz_magnitude_v_per_v": 228.40684439596754,
+    "gain_at_1khz_db": 47.1741822750895,
+    "phase_at_1khz_degrees": -175.18326146908055,
+    "minus_3db_low_cutoff_hz": 84.99307482356954,
+    "minus_3db_high_cutoff_hz": 12928903.766661141,
+    "bandwidth_hz": 12928818.773586318,
+    "operating_point_v": {
+      "base": 2.008770208033474,
+      "emitter": 1.347051370297856,
+      "collector": 5.709299997196428
+    },
+    "bias": {
+      "vbe_v": 0.6617188377356182,
+      "vce_v": 4.362248626898572,
+      "collector_current_a_estimate": 0.001338446809107143
+    },
+    "topology_checks": {
+      "positive_collector_current": true,
+      "forward_biased_base_emitter": true,
+      "not_saturated": true
+    },
+    "topology_checks_pass": true
+  },
+  "model_limitations": [
+    "The BJT uses a self-contained generic model; real-device gain spread, temperature, and tolerances are not represented."
+  ],
+  "verification_note": "design_pass covers only the documented operating-region checks, not a product-level performance specification."
+}

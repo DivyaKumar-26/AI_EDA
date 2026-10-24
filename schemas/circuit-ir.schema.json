@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CircuitPilot Circuit IR",
+  "type": "object",
+  "required": ["title", "elements", "nets", "models", "subcircuits", "directives", "comments"],
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "elements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["reference", "nodes", "body"],
+        "properties": {
+          "reference": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$" },
+          "nodes": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 2 },
+          "body": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "nets": { "type": "array", "items": { "type": "string" } },
+    "models": { "type": "array", "items": { "type": "string" } },
+    "subcircuits": { "type": "array", "items": { "type": "string" } },
+    "directives": { "type": "array", "items": { "type": "string" } },
+    "comments": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

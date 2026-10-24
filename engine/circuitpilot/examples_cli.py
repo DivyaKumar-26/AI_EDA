@@ -1,0 +1,39 @@
+"""Run the deterministic amplifier and bias-network example suite in LTspice."""
+
+from __future__ import annotations
+
+import argparse
+
+from .design_runner import run_example_design
+from .designs import EXAMPLE_DESIGNS
+from .simulation import SimulationError
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Generate and simulate CircuitPilot example analog designs")
+    parser.add_argument("--list", action="store_true", help="list available design identifiers")
+    parser.add_argument("--design", action="append", choices=tuple(EXAMPLE_DESIGNS), help="design identifier (repeatable); default runs all six")
+    parser.add_argument("--output-root", default="output/analog_examples", help="new parent directory for per-design artifacts")
+    parser.add_argument("--ltspice", help="path to LTspice.exe; auto-discovered when omitted")
+    parser.add_argument("--timeout", type=float, default=240.0, help="per-design LTspice timeout in seconds")
+    args = parser.parse_args()
+    if args.list:
+        for identifier, design in EXAMPLE_DESIGNS.items():
+            print(f"{identifier}\t{design.title}")
+        return 0
+
+    failures = 0
+    for identifier in args.design or EXAMPLE_DESIGNS:
+        design = EXAMPLE_DESIGNS[identifier]
+        try:
+            report = run_example_design(design, args.output_root, args.ltspice, args.timeout)
+            print(f"SIMULATED {identifier}: {report}")
+        except (SimulationError, OSError, ValueError) as exc:
+            failures += 1
+            print(f"FAILED {identifier}: {exc}")
+    print(f"Completed {len(args.design or EXAMPLE_DESIGNS) - failures}/{len(args.design or EXAMPLE_DESIGNS)} requested design simulations.")
+    return 1 if failures else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
