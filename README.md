@@ -7,23 +7,41 @@ deterministic SPICE designs, editable LTspice schematics, simulations, measureme
 hard-constraint reports. The longer-term product idea is a VS Code extension. The current
 repository is an engineering prototype, not a production design tool.
 
+The latest behavior-driven synthesis goal is to turn a structured request, and eventually a
+natural-language request, into a selected topology, an initialized candidate, reproducible
+`CircuitIR`, and matching ASC/netlist artifacts. LTspice measurements and hard verification
+should decide whether requested limits pass; bounded conventional optimization should refine
+failed candidates, with RL available as an optional later proposal policy. Transfer functions
+may be supplied when useful, but are not required when the selected topology defines the
+behavior.
+
+The implementation currently covers structured JSON synthesis for an RC low-pass: it searches
+E-series R/C values against explicit component and cutoff bounds, optionally includes nominal
+source/load resistance and a passband-gain range, returns a `CircuitIR`, and renders netlist and
+ASC artifacts from that IR. An explicit `--simulate` mode sends the same IR through LTspice,
+estimates low-frequency passband gain from complex AC samples using the one-pole asymptote,
+measures cutoff relative to it, and checks the requested
+cutoff and optional gain bounds. A bounded `--refine` mode searches allowed E-series R/C pairs
+under an explicit simulation budget. Loaded request behavior has regression coverage and a
+real LTspice run covering nominal finite source/load conditions, cutoff, and passband gain.
+Continuous optimization, operating-condition corners, and other behaviors/topologies remain
+unsupported in the request path. The six-example workflows remain separate.
+
 ## Project goal
 
-The immediate goal is to make a small set of supported circuits reproducible and verifiable
-before expanding topology coverage or adding optimization. LTspice produces the electrical
-evidence. The deterministic verification code checks measurements against explicit limits.
-An AI or learned policy may suggest candidates, but it does not establish electrical
-correctness.
+Build a behavior-driven synthesis pipeline that accepts structured requests first and adds a
+natural-language entry later. The pipeline should identify a supported topology, initialize a
+candidate from explicit component bounds and design rules, and produce the `CircuitIR` used for
+both ASC and CIR generation. It should run LTspice, measure requested behavior, and evaluate hard
+limits from those measurements. If a candidate fails, bounded conventional optimization should
+try permitted changes within explicit budgets and retain the associated history and artifacts.
+An optional RL policy may propose bounded candidate changes after the deterministic workflow is
+reliable; it does not decide whether a design passes.
 
-The intended workflow is:
-
-1. Gather a complete, explicit electrical specification.
-2. Validate supported values, units, metrics, and limits.
-3. Build a canonical `CircuitIR` and derive deterministic netlists and schematics from it.
-4. Run LTspice and preserve the generated input, raw output, log, BOM, and report.
-5. Measure the required behavior and fail closed when evidence or a required metric is
-   missing.
-6. Report simulation verification separately from hardware or production qualification.
+Transfer-function input is optional when topology and behavioral constraints already describe
+the request. Missing required limits, measurements, simulation results, or requested conditions
+must fail closed. Simulation verification must remain distinct from hardware and production
+qualification.
 
 ## Current project state
 
@@ -45,6 +63,15 @@ export. Spec reports show numerical limit results separately and keep the overal
 failed while requested operating-condition coverage is incomplete. The review does not
 establish production or hardware qualification; do not treat this source state as a qualified
 release.
+
+The behavioral RC request path has optional LTspice AC execution for its cutoff requirement
+and optional passband-gain requirement. It accepts explicit nominal source/load conditions;
+passband gain is estimated from the complex AC one-pole asymptote and cutoff is measured relative
+to that estimate. Measured verification is separate from analytical synthesis feasibility and fails
+closed when simulation or measurements are unavailable. Real request evidence now includes an
+ideal-source/open-load cutoff run and a loaded source/load run with both cutoff and passband-gain
+checks. The earlier loaded run using the biased sweep-start estimate is retained as a superseded
+diagnostic only. `production_qualified` remains false.
 
 ## Supported examples
 
@@ -90,6 +117,51 @@ comparison has 16 checks for each bias network and op-amp, and 21 checks for eac
 design, for 106 checks total in the saved reports. Every numeric relative error is 0.0. The
 reports set `production_qualified` to `false`; these results establish simulation agreement
 for the current generic models and implemented analyses only.
+
+### Structured RC request simulation
+
+LTspice 26.1.1.0 completed the structured RC low-pass request at
+`output/rc_behavior_request_20261024_run2`. The request's inclusive cutoff range was 1500–1700
+Hz; LTspice raw data contained 201 AC points and produced a measured cutoff of
+1591.5494309190115 Hz. Request verification passed, while `production_qualified` remained
+`false`. This is evidence for this one RC request and cutoff check only.
+
+`output/rc_behavior_request_20261024_run1` is a preserved failed timeout diagnostic. It timed
+out after 120 seconds and produced no raw or log file; its verification failed. It is not
+simulation evidence and was not used for the successful result.
+
+The loaded request [`docs/example-rc-lowpass-loaded-request.json`](docs/example-rc-lowpass-loaded-request.json)
+was verified by LTspice 26.1.1.0 at `output/rc_behavior_loaded_20261024_run2`. With Rs=100 Ω
+and RL=10 kΩ, the run processed 201 AC points and measured cutoff 1606.0180621091863 Hz against
+the inclusive 1500–1700 Hz range. The complex-asymptote passband estimate was
+0.900900900900901 against the requested 0.89–0.92 range. Both checks passed. The analytical
+candidate predicted 1606.0180621091279 Hz and gain 0.9009009009009008. The report retains
+`production_qualified: false`.
+
+`output/rc_behavior_loaded_20261024_run1` is preserved as a superseded diagnostic: it used the
+biased sweep-start estimate and reported cutoff 1621.894563077167 Hz and gain estimate
+0.8964299010900756. Do not use those figures as verification evidence; run2 contains the
+corrected complex-asymptote measurement.
+
+### Bounded RC refinement runs
+
+LTspice 26.1.1.0 completed a bounded refinement of the example RC request at
+`output/rc_behavior_refinement_20261024_run1`. The configured simulation budget was 5; the
+search stopped after its first candidate, with 1 simulation used. The measured cutoff was
+1591.5494309190115 Hz and passed the inclusive 1500–1700 Hz range. The report records
+`stop_reason: first_measured_pass` and `production_qualified: false`.
+
+A second run exercises a two-candidate search. Its tracked request is
+[`docs/example-rc-lowpass-two-candidate-request.json`](docs/example-rc-lowpass-two-candidate-request.json),
+and the run artifacts are in `output/rc_behavior_refinement_20261024_two_candidate_run1`. The
+original run input is preserved at `output/rc_behavior_refinement_20261024_two_candidate_request.json`.
+With a budget of 2, candidate 1
+(R=1000 Ω, C=100 nF) measured 1591.5494309190115 Hz and failed the 1300–1500 Hz range.
+Candidate 2 (R=1000 Ω, C=120 nF) measured 1326.2911924324903 Hz and passed. Refinement stopped
+with `first_measured_pass` after 2 simulations. Both candidate directories preserve their CIR,
+ASC, IR, raw/log, and verification report. The top-level report keeps
+`production_qualified: false`. These runs demonstrate bounded search and measured RC cutoff
+verification only.
 
 Earlier folders `output/ltspice_26_1_1_asc_20261024`,
 `output/ltspice_26_1_1_asc_validated_20261024`, and
@@ -168,7 +240,15 @@ current machine-readable contract at
 The natural-language prompt is for gathering information. The engine does not parse prose.
 Translate the answers into the validated JSON specification before asking the current engine
 to evaluate limits. Unknown requirements remain unknown; do not invent values to fill them.
-The current engine only supports the six listed designs and its declared fields and metrics.
+The measurement-requirements runner supports the six listed designs and their declared
+fields/metrics; the separate structured behavioral path currently synthesizes RC low-pass
+requests as documented below.
+
+For the initial behavioral synthesis path, see
+[`docs/rc-lowpass-request.md`](docs/rc-lowpass-request.md) and
+[`docs/example-rc-lowpass-request.json`](docs/example-rc-lowpass-request.json). The request
+requires a cutoff range and explicit R/C bounds and E-series; a target frequency is optional.
+The structured schema is [`schemas/rc-lowpass-request.schema.json`](schemas/rc-lowpass-request.schema.json).
 
 ## Reproducible commands
 
@@ -183,6 +263,10 @@ python -m circuitpilot --r 1000 --c 1e-7
 python -m circuitpilot.examples_cli --list
 python -m circuitpilot.examples_cli --design inverting-opamp-amplifier --output-root output/<new-run-folder> --timeout 240
 python -m circuitpilot.examples_cli --design inverting-opamp-amplifier --spec docs/example-inverting-opamp-spec.json --output-root output/<new-spec-run-folder> --timeout 240
+python -m circuitpilot.design_request_cli --request docs/example-rc-lowpass-request.json
+python -m circuitpilot.design_request_cli --request docs/example-rc-lowpass-request.json --simulate --output-dir output/<new-request-run> --ltspice <path-to-LTspice.exe> --timeout 120
+python -m circuitpilot.design_request_cli --request docs/example-rc-lowpass-request.json --simulate --refine --budget 5 --output-dir output/<new-refinement-run> --ltspice <path-to-LTspice.exe> --timeout 120
+python -m circuitpilot.design_request_cli --request docs/example-rc-lowpass-loaded-request.json --simulate --output-dir output/<new-loaded-request-run> --ltspice <path-to-LTspice.exe> --timeout 120
 python -m circuitpilot.schematics_cli --export-only --output-root output/<new-asc-export-folder>
 python -m circuitpilot.schematics_cli --output-root output/<new-asc-run-folder> --reference-root output/<matching-cir-run-folder> --timeout 240
 python -m pytest -q
@@ -198,8 +282,17 @@ requiring LTspice. Add `--simulate --output-dir output/<new-rc-run-folder>` to r
 LTspice AC sweep and measure the transfer cutoff. The RC sweep is fixed from 1 Hz to 1 MHz;
 a cutoff outside that band cannot be measured.
 
+The structured request command also has an explicit `--simulate` mode; it requires a new,
+unused `--output-dir`, estimates passband gain from complex LTspice AC data, measures cutoff
+relative to that gain, and checks the requested cutoff and optional gain range.
+Add `--refine --budget <positive-integer>` to try deterministically ranked component pairs and
+stop on the first measured pass, exhausted budget/candidate set, or simulator/measurement
+failure. Each attempt is preserved in a separate candidate folder with top-level history and
+summary reports. See [docs/rc-lowpass-request.md](docs/rc-lowpass-request.md) for ranking,
+stop rules, artifact set, and fail-closed behavior.
+
 Available tests were run with `$env:PYTHONPATH='engine'; python -m unittest discover -s tests/unit -v`;
-all 54 tests passed. `python -m pytest -q` could not run because `pytest` is not installed in
+all 84 tests passed. `python -m pytest -q` could not run because `pytest` is not installed in
 the environment. The six-design LTspice evidence is complete at the paths above and received
 independent review with no actionable findings. The historical v1/v2 diagnostic notes do not
 establish a final design pass.
@@ -214,6 +307,13 @@ establish a final design pass.
   reference scenarios, constraints, and reports.
 - `engine/circuitpilot/requirements.py`: supported requirement metrics, units, JSON
   validation, and fail-closed evaluation.
+- `engine/circuitpilot/rc_request.py`: behavioral RC request validation, E-series candidate
+  search, fail-closed feasibility, and synthesis report.
+- `engine/circuitpilot/design_request_cli.py`: JSON request synthesis and optional simulation CLI.
+- `engine/circuitpilot/rc_request_simulation.py`: same-IR ASC/CIR generation, LTspice execution,
+  complex-AC asymptote gain and relative-cutoff measurements, hard verification, and request-run artifacts.
+- `engine/circuitpilot/rc_request_refinement.py`: bounded deterministic E-series candidate
+  refinement, per-attempt evidence, and ordered history/summary reports.
 - `engine/circuitpilot/schematic.py`: ASC rendering, symbol mapping, connectivity manifests,
   and support symbols.
 - `engine/circuitpilot/schematic_validation.py`: native LTspice `.net` IR pin/value checker.
@@ -251,12 +351,17 @@ that preference when available. Push or commit only when the user explicitly req
 
 ## Future plan
 
-After the six examples and exports pass review, keep the supported topology and requirement
-boundary explicit. Improve device provenance, BOM and package validation, realistic
-input/load coverage, stability and transient checks, then broaden the reference requirements
-and independent corner coverage. Only after those verification gates are reliable should the
-project add bounded optimization for additional circuits, held-out RL tasks,
-natural-language requirement parsing, or a VS Code user interface.
+Extend the structured RC request path from nominal source/load conditions and cutoff/passband
+gain to operating-condition corners and additional measurements, and broaden the current bounded
+E-series refinement beyond first measured pass.
+Extend the request and initialization pipeline to
+additional behavior/topology families while keeping unsupported behavior explicit. Add
+natural-language request intake as a front end that produces a validated structured request; it
+must not invent missing electrical limits. Evaluate RL as an optional proposal policy against the conventional
+baseline on held-out tasks. A VS Code experience, broader robustness work, and release
+qualification follow once these stages have evidence. The existing six-design simulation and
+ASC/CIR comparison results remain evidence for those example workflows only; they do not
+qualify the behavior-driven request path or establish production/hardware qualification.
 
 The long-term design principle remains: AI proposes; deterministic tools generate and check;
 LTspice simulates; explicit evidence decides whether declared requirements pass.

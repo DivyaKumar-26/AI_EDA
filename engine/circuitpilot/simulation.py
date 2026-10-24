@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import statistics
 import subprocess
 from typing import Callable
 
@@ -25,6 +26,10 @@ class ACPoint:
     frequency_hz: float
     input_magnitude: float
     output_magnitude: float
+    input_real: float | None = None
+    input_imag: float | None = None
+    output_real: float | None = None
+    output_imag: float | None = None
 
 
 @dataclass(frozen=True)
@@ -100,7 +105,10 @@ def parse_ascii_ac_raw(
         output_magnitude = math.hypot(output_real, output_imag)
         if not math.isfinite(frequency) or frequency <= 0 or not math.isfinite(input_magnitude) or not math.isfinite(output_magnitude):
             raise SimulationError(f"LTspice raw point {expected_index} contains invalid values")
-        points.append(ACPoint(frequency, input_magnitude, output_magnitude))
+        points.append(ACPoint(
+            frequency, input_magnitude, output_magnitude,
+            input_real, input_imag, output_real, output_imag,
+        ))
         cursor += variables
 
     if any(a.frequency_hz >= b.frequency_hz for a, b in zip(points, points[1:])):
@@ -147,6 +155,53 @@ def measure_cutoff_hz(points: list[ACPoint], target_db: float = -3.01029995664) 
                 return cutoff
             break
     raise SimulationError("AC sweep did not contain a descending -3.0103 dB cutoff crossing")
+
+
+def estimate_one_pole_passband_gain(points: list[ACPoint]) -> float:
+    """Estimate DC gain from complex AC data for H(s)=G0/(1+j*w*tau).
+
+    For a first-order low-pass, real(1/H) is constant and equals 1/G0 at every
+    frequency. The median across valid raw points rejects isolated numerical outliers.
+    """
+    inverse_real_parts = []
+    for point in points:
+        complex_values = (point.input_real, point.input_imag, point.output_real, point.output_imag)
+        if any(value is None or not math.isfinite(value) for value in complex_values):
+            raise SimulationError("complex AC samples are required to estimate one-pole passband gain")
+        source = complex(point.input_real, point.input_imag)
+        output = complex(point.output_real, point.output_imag)
+        if abs(source) <= 0 or abs(output) <= 0:
+            continue
+        transfer = output / source
+        if abs(transfer) <= 0:
+            continue
+        inverse_transfer = 1.0 / transfer
+        if math.isfinite(inverse_transfer.real) and inverse_transfer.real > 0:
+            inverse_real_parts.append(inverse_transfer.real)
+    if len(inverse_real_parts) < 2:
+        raise SimulationError("too few valid complex AC samples to estimate passband gain")
+    inverse_gain = statistics.median(inverse_real_parts)
+    if not math.isfinite(inverse_gain) or inverse_gain <= 0:
+        raise SimulationError("complex AC samples do not yield a finite positive passband gain")
+    gain = 1.0 / inverse_gain
+    if not math.isfinite(gain) or gain <= 0:
+        raise SimulationError("estimated passband gain is outside the representable range")
+    return gain
+
+
+def measure_cutoff_relative_to_passband(points: list[ACPoint], passband_gain: float) -> float:
+    """Measure the descending -3 dB crossing relative to an estimated DC gain."""
+    if not math.isfinite(passband_gain) or passband_gain <= 0:
+        raise SimulationError("measured passband gain must be finite and positive")
+    normalized = []
+    for point in points:
+        if not math.isfinite(point.input_magnitude) or point.input_magnitude <= 0:
+            raise SimulationError("AC input has no positive magnitude")
+        output = (point.output_magnitude / point.input_magnitude) / passband_gain
+        if not math.isfinite(output):
+            raise SimulationError("normalized AC output is outside the representable float range")
+        normalized.append(ACPoint(point.frequency_hz, 1.0, output))
+    return measure_cutoff_hz(normalized)
 
 
 def discover_ltspice(explicit_path: str | None = None) -> Path:

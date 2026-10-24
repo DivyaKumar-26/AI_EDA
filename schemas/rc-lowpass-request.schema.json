@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CircuitPilot RC low-pass behavioral request v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "topology", "behavior", "components"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "topology": {"const": "rc_lowpass"},
+    "behavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cutoff_hz"],
+      "properties": {
+        "cutoff_hz": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min", "max"],
+          "properties": {
+            "min": {"type": "number", "exclusiveMinimum": 0},
+            "max": {"type": "number", "exclusiveMinimum": 0},
+            "target": {"type": "number", "exclusiveMinimum": 0}
+          }
+        },
+        "passband_gain": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min", "max"],
+          "properties": {
+            "min": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+            "max": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}
+          }
+        }
+      }
+    },
+    "operating_conditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_resistance_ohm", "load_resistance_ohm"],
+      "properties": {
+        "source_resistance_ohm": {"type": "number", "minimum": 0},
+        "load_resistance_ohm": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "number", "exclusiveMinimum": 0}
+          ]
+        }
+      }
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resistance_ohm", "capacitance_f"],
+      "properties": {
+        "resistance_ohm": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-06, "maximum": 1000000000000.0}, "max": {"minimum": 1e-06, "maximum": 1000000000000.0}}}
+          ]
+        },
+        "capacitance_f": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-15, "maximum": 1000.0}, "max": {"minimum": 1e-15, "maximum": 1000.0}}}
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "component_bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max", "series"],
+      "properties": {
+        "min": {"type": "number", "exclusiveMinimum": 0},
+        "max": {"type": "number", "exclusiveMinimum": 0},
+        "series": {"type": "string", "enum": ["E3", "E6", "E12", "E24", "e3", "e6", "e12", "e24"]}
+      }
+    }
+  }
+}

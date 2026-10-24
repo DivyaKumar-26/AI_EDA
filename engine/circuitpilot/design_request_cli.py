@@ -1,0 +1,109 @@
+"""Compile a structured behavioral request into CircuitIR and a candidate report."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import math
+from pathlib import Path
+import sys
+
+from .rc_request import NoFeasibleCandidateError, load_rc_request, synthesize_rc_request
+from .rc_request_simulation import simulate_rc_request
+from .rc_request_refinement import refine_rc_request
+from .schematic import render_asc
+from .simulation import SimulationError
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Synthesize a supported structured circuit request")
+    parser.add_argument("--request", required=True, type=Path, help="path to a versioned JSON design request")
+    parser.add_argument("--simulate", action="store_true", help="run LTspice and verify measured cutoff and requested gain limits")
+    parser.add_argument("--refine", action="store_true", help="try ranked E-series candidates until a measured pass or stop condition")
+    parser.add_argument("--budget", type=int, help="maximum LTspice candidate simulations for --refine (required)")
+    parser.add_argument("--output-dir", type=Path, help="new, unused folder for simulation artifacts (requires --simulate)")
+    parser.add_argument("--ltspice", help="path to LTspice.exe")
+    parser.add_argument("--timeout", type=float, default=120.0, help="LTspice timeout in seconds (default: 120)")
+    args = parser.parse_args(argv)
+    if args.simulate and args.output_dir is None:
+        parser.error("--simulate requires --output-dir pointing to a new, unused folder")
+    if not args.simulate and args.output_dir is not None:
+        parser.error("--output-dir can only be used with --simulate")
+    if args.refine and not args.simulate:
+        parser.error("--refine requires --simulate")
+    if args.refine and args.budget is None:
+        parser.error("--refine requires an explicit positive --budget")
+    if args.budget is not None and not args.refine:
+        parser.error("--budget can only be used with --refine")
+    if args.budget is not None and args.budget <= 0:
+        parser.error("--budget must be a positive integer")
+    if not math.isfinite(args.timeout) or args.timeout <= 0:
+        parser.error("--timeout must be finite and positive")
+    try:
+        request = load_rc_request(args.request)
+    except ValueError as exc:
+        parser.error(str(exc))
+    if args.refine:
+        try:
+            refined = refine_rc_request(
+                request,
+                args.output_dir,
+                args.budget,
+                executable=args.ltspice,
+                timeout_seconds=args.timeout,
+            )
+        except (OSError, ValueError, SimulationError) as exc:
+            parser.error(str(exc))
+        output = {
+            "refinement_report": refined.report,
+            "refinement_history": refined.history,
+            "output_dir": str(args.output_dir.expanduser().resolve()),
+        }
+        if refined.selected_result is not None:
+            result = refined.selected_result
+            output.update({
+                "circuit_ir": result.circuit_ir.to_dict(),
+                "netlist": result.circuit_ir.render(),
+                "asc": render_asc(result.circuit_ir, sheet_title="CircuitPilot RC low-pass"),
+                "synthesis_report": result.report,
+                "verification_report": refined.selected_verification,
+            })
+        json.dump(output, sys.stdout, indent=2, sort_keys=True)
+        sys.stdout.write("\n")
+        return 0 if refined.report["design_pass"] else 1
+
+    run = None
+    try:
+        if args.simulate:
+            run = simulate_rc_request(
+                request,
+                args.output_dir,
+                executable=args.ltspice,
+                timeout_seconds=args.timeout,
+            )
+            result = run.synthesis_result
+        else:
+            result = synthesize_rc_request(request)
+    except NoFeasibleCandidateError as exc:
+        print(json.dumps({"error": str(exc), "synthesis_report": exc.report}, indent=2, sort_keys=True))
+        return 2
+    except (OSError, ValueError, SimulationError) as exc:
+        parser.error(str(exc))
+    output = {
+        "circuit_ir": result.circuit_ir.to_dict(),
+        "netlist": result.circuit_ir.render(),
+        "asc": render_asc(result.circuit_ir, sheet_title="CircuitPilot RC low-pass"),
+        "synthesis_report": result.report,
+    }
+    exit_code = 0
+    if run is not None:
+        output["verification_report"] = run.report
+        output["output_dir"] = str(args.output_dir.expanduser().resolve())
+        exit_code = 0 if run.report["design_pass"] else 1
+    json.dump(output, sys.stdout, indent=2, sort_keys=True)
+    sys.stdout.write("\n")
+    return exit_code
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
