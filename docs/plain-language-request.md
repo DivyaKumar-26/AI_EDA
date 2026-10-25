@@ -18,6 +18,7 @@ Supported topology phrases and their required information:
 | `op-amp buffered RC low-pass filter` or `buffered RC low-pass filter` | `cutoff` | resistance, capacitance |
 | `series RLC band-pass filter` | `resonance` | resistance, capacitance, inductance |
 | `inverting op-amp amplifier` | `gain magnitude` | input resistance, feedback resistance |
+| `unity-gain Sallen-Key Butterworth low-pass filter` | `cutoff` | resistor 1, resistor 2, capacitor 1, capacitor 2 |
 
 Examples:
 
@@ -28,9 +29,10 @@ Design an RL low-pass filter with cutoff from 1.5 kHz to 1.7 kHz, resistance fro
 Design an op-amp buffered RC low-pass filter with cutoff from 1.5 kHz to 1.7 kHz, resistance from 1 kOhm to 10 kOhm using E12, and capacitance from 50 nF to 150 nF using E12.
 Design a series RLC band-pass filter with resonance from 1.5 kHz to 1.7 kHz, resistance from 100 Ohm to 1 kOhm using E12, capacitance from 50 nF to 150 nF using E12, and inductance from 50 mH to 150 mH using E12.
 Design an inverting op-amp amplifier with gain magnitude from 2 V/V to 10 V/V, input resistance from 1 kOhm to 10 kOhm using E12, and feedback resistance from 2 kOhm to 100 kOhm using E12.
+Design a unity-gain Sallen-Key Butterworth low-pass filter with cutoff from 1.5 kHz to 1.7 kHz, resistor 1 from 6.8 kOhm to 6.8 kOhm using E12, resistor 2 from 6.8 kOhm to 6.8 kOhm using E12, capacitor 1 from 22 nF to 22 nF using E12, and capacitor 2 from 10 nF to 10 nF using E12.
 ```
 
-Frequency units: Hz, kHz, MHz. Resistance units: ohm/Ω and kohm/kΩ. Capacitance units: F, mF, uF/µF, nF, pF. Inductance units: H, mH, uH/µH, nH. Gain magnitude uses `V/V`. Values must be positive and satisfy the existing topology validator, including topology-specific limits such as op-amp bandwidth and gain bounds. The current handlers use their ideal-source, open-load reference model. Source/load conditions, tolerances, temperature corners, additional metrics, and behavior outside these supported request contracts must be specified through another supported interface or are rejected.
+Frequency units: Hz, kHz, MHz. Resistance units: ohm/Ω and kohm/kΩ. Capacitance units: F, mF, uF/µF, nF, pF. Inductance units: H, mH, uH/µH, nH. Gain magnitude uses `V/V`. Values must be positive and satisfy the existing topology validator, including topology-specific limits such as op-amp bandwidth and gain bounds. The current handlers use their ideal-source, open-load reference model. For the documented Sallen-Key wiring, R1 connects input to n1, R2 connects n1 to n2, C1 connects n1 to output, and C2 connects n2 to ground; the unity follower buffers n2. Its natural frequency is `f0 = 1/(2π√(R1R2C1C2))` and `Q = √(R1R2 C1/C2)/(R1+R2)`. The synthesizer derives the actual analytical -3 dB crossing from f0 and Q before screening the requested range. The experimental Sallen-Key topology accepts cutoff requests up to 150 kHz (below 1% of the CP_OPAMP model's approximately 15.9 MHz gain-bandwidth) and analytically screens Q to within 5% of the Butterworth value. Its AC simulation measures the -3 dB crossing relative to the sweep-start passband estimate and reports attenuation at ten times the measured cutoff; attenuation is diagnostic, not a requested constraint. Source/load conditions, tolerances, temperature corners, additional metrics, and behavior outside these supported request contracts must be specified through another supported interface or are rejected.
 
 ## Legacy labeled format
 
@@ -49,6 +51,7 @@ Pass either sentence or the legacy labeled request as one shell-quoted `--prompt
 ```powershell
 $env:PYTHONPATH = 'engine'
 python -m circuitpilot.design_request_cli --prompt "Design an RC high-pass filter with cutoff from 1.5 kHz to 1.7 kHz, resistance from 1 kOhm to 10 kOhm using E12, and capacitance from 50 nF to 150 nF using E12."
+python -m circuitpilot.design_request_cli --prompt "Design a unity-gain Sallen-Key Butterworth low-pass filter with cutoff from 1.5 kHz to 1.7 kHz, resistor 1 from 6.8 kOhm to 6.8 kOhm using E12, resistor 2 from 6.8 kOhm to 6.8 kOhm using E12, capacitor 1 from 22 nF to 22 nF using E12, and capacitor 2 from 10 nF to 10 nF using E12."
 ```
 
 The JSON output includes the original prompt, normalized validated request, assumptions, generated CircuitIR/netlist/ASC, and synthesis report. Incomplete or unsupported prompts emit an `intake_report` and exit with status 2. Complete prompts can use the existing simulation flow:

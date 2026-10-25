@@ -36,6 +36,10 @@ _RLC_TOPOLOGY = "series_rlc_bandpass"
 _OPAMP_RC_MAX_CUTOFF_HZ = 150_000.0
 _INVERTING_OPAMP_TOPOLOGY = "inverting_opamp_amplifier"
 _INVERTING_OPAMP_MAX_GAIN = 100.0
+_SALLEN_KEY_TOPOLOGY = "sallen_key_butterworth_lowpass"
+_SALLEN_KEY_MAX_CUTOFF_HZ = 150_000.0
+_SALLEN_KEY_Q_RELATIVE_TOLERANCE = 0.05
+_SALLEN_KEY_MAX_CANDIDATES = 1_000_000
 
 
 @dataclass(frozen=True)
@@ -64,8 +68,8 @@ def validate_topology_request(request: Any) -> dict:
     if not isinstance(request, dict):
         raise ValueError("request must be an object")
     topology = request.get("topology")
-    if not isinstance(topology, str) or (topology not in _COMPONENTS and topology not in (_RLC_TOPOLOGY, _INVERTING_OPAMP_TOPOLOGY)):
-        raise ValueError("topology must be 'rc_lowpass', 'rc_highpass', 'rl_lowpass', 'opamp_rc_lowpass', 'inverting_opamp_amplifier', or 'series_rlc_bandpass'")
+    if not isinstance(topology, str) or (topology not in _COMPONENTS and topology not in (_RLC_TOPOLOGY, _INVERTING_OPAMP_TOPOLOGY, _SALLEN_KEY_TOPOLOGY)):
+        raise ValueError("topology must be one of the supported RC/RL, op-amp, series_rlc_bandpass, or sallen_key_butterworth_lowpass values")
     if set(request) != {"schema_version", "topology", "behavior", "components"}:
         raise ValueError("request must contain only schema_version, topology, behavior, and components")
     if request["schema_version"] != 1 or isinstance(request["schema_version"], bool):
@@ -74,6 +78,8 @@ def validate_topology_request(request: Any) -> dict:
         return _validate_series_rlc_request(request)
     if topology == _INVERTING_OPAMP_TOPOLOGY:
         return _validate_inverting_opamp_request(request)
+    if topology == _SALLEN_KEY_TOPOLOGY:
+        return _validate_sallen_key_request(request)
     behavior = request["behavior"]
     if not isinstance(behavior, dict) or set(behavior) != {"cutoff_hz"}:
         raise ValueError("behavior must contain only cutoff_hz")
@@ -136,6 +142,8 @@ def synthesize_topology_request(request: Mapping[str, Any]) -> TopologyRequestRe
         return _synthesize_series_rlc(spec)
     if topology == _INVERTING_OPAMP_TOPOLOGY:
         return _synthesize_inverting_opamp(spec)
+    if topology == _SALLEN_KEY_TOPOLOGY:
+        return _synthesize_sallen_key(spec)
     resistance_name, second_name, *_ = _COMPONENTS[topology]
     r_values = _standard_values(spec["components"][resistance_name])
     x_values = _standard_values(spec["components"][second_name])
@@ -212,11 +220,13 @@ def simulate_topology_request(
     is_rlc = topology == _RLC_TOPOLOGY
     is_opamp = topology == "opamp_rc_lowpass"
     is_inverting_opamp = topology == _INVERTING_OPAMP_TOPOLOGY
+    is_sallen_key = topology == _SALLEN_KEY_TOPOLOGY
     direction = "ascending" if topology == "rc_highpass" else "descending"
     metric_name = "resonance_hz" if is_rlc else ("gain_magnitude" if is_inverting_opamp else "cutoff_hz")
     expected_frequency = 1000.0 if is_inverting_opamp else result.report["candidate"][metric_name]
-    low, high = ((10.0, 100_000_000.0) if is_inverting_opamp
-                 else (expected_frequency / 10.0, expected_frequency * 10.0))
+    low, high = ((10.0, 100_000_000.0) if is_inverting_opamp else
+                 (expected_frequency / 100.0, expected_frequency * 20.0) if is_sallen_key else
+                 (expected_frequency / 10.0, expected_frequency * 10.0))
     directives = tuple(f".ac dec 100 {format_spice_number(low)} {format_spice_number(high)}"
                        if line.casefold().startswith(".ac ") else line
                        for line in result.circuit_ir.directives)
@@ -251,6 +261,17 @@ def simulate_topology_request(
             measured = measure_gain_magnitude_at_frequency(points, 1000.0)
             measurements = {"gain_magnitude": measured, "frequency_hz": 1000.0,
                             "ac_points": len(points), "evidence": "LTspice ASCII AC raw data"}
+        elif is_sallen_key:
+            passband_gain = measure_gain_magnitude_at_frequency(points, points[0].frequency_hz)
+            measured = measure_cutoff_relative_to_passband(points, passband_gain, direction="descending")
+            attenuation_frequency = 10.0 * measured
+            attenuation_gain = measure_gain_magnitude_at_frequency(points, attenuation_frequency)
+            attenuation_db = 20.0 * math.log10(attenuation_gain / passband_gain)
+            measurements = {"cutoff_hz": measured,
+                            "passband_gain_estimate_at_sweep_start": passband_gain,
+                            "attenuation_at_10x_cutoff_db": attenuation_db,
+                            "attenuation_measurement_frequency_hz": attenuation_frequency,
+                            "ac_points": len(points), "evidence": "LTspice ASCII AC raw data"}
         else:
             passband_gain = estimate_one_pole_passband_gain(points)
             measured = measure_cutoff_relative_to_passband(points, passband_gain, direction=direction)
@@ -264,9 +285,10 @@ def simulate_topology_request(
             "verification_status": "passed" if passed else "failed",
             "design_pass": passed,
             "production_qualified": False,
-            **({} if is_rlc or is_inverting_opamp else {"cutoff_direction": direction}),
+            **({} if is_rlc or is_inverting_opamp else {"cutoff_direction": "descending" if is_sallen_key else direction}),
             "measurement_method": ("interpolated AC output-magnitude peak" if is_rlc else
                                    "|V(out)/V(in)| at 1 kHz" if is_inverting_opamp else
+                                   "descending -3 dB crossing relative to sweep-start passband estimate" if is_sallen_key else
                                    direction + " -3 dB crossing"),
             ("requested_resonance_hz" if is_rlc else
              "requested_gain_magnitude" if is_inverting_opamp else
@@ -288,12 +310,13 @@ def simulate_topology_request(
         report = {
             "topology": topology, "simulation_status": "failed", "verification_status": "failed",
             "design_pass": False, "production_qualified": False,
-            **({} if is_rlc or is_inverting_opamp else {"cutoff_direction": direction}),
+            **({} if is_rlc or is_inverting_opamp else {"cutoff_direction": "descending" if is_sallen_key else direction}),
             ("requested_resonance_hz" if is_rlc else
              "requested_gain_magnitude" if is_inverting_opamp else
              "requested_cutoff_hz"): {"min": bounds["min"], "max": bounds["max"]},
             "measurements": ({"resonance_hz": None} if is_rlc else
                              {"gain_magnitude": None, "frequency_hz": 1000.0} if is_inverting_opamp else
+                             {"cutoff_hz": None, "passband_gain_estimate_at_sweep_start": None} if is_sallen_key else
                              {"cutoff_hz": None, "passband_gain_estimate_from_complex_ac": None}),
             "hard_constraints": [{"name": metric_name, "min": bounds["min"], "max": bounds["max"],
                                   "measured": None, "pass": False,
@@ -317,6 +340,129 @@ def _standard_values(bounds: Mapping[str, Any]) -> list[float]:
     last_decade = math.floor(math.log10(high)) + 1
     return sorted({base * 10.0 ** decade for decade in range(first_decade, last_decade + 1)
                    for base in _VALUES[bounds["series"]] if low <= base * 10.0 ** decade <= high})
+
+
+def _validate_sallen_key_request(request: Mapping[str, Any]) -> dict:
+    behavior = request["behavior"]
+    if not isinstance(behavior, dict) or set(behavior) != {"cutoff_hz"}:
+        raise ValueError("sallen_key_butterworth_lowpass behavior must contain only cutoff_hz")
+    cutoff = behavior["cutoff_hz"]
+    if not isinstance(cutoff, dict) or set(cutoff) - {"min", "max", "target"} or not {"min", "max"} <= set(cutoff):
+        raise ValueError("cutoff_hz requires min/max and optionally target")
+    low = _positive(cutoff["min"], "cutoff_hz.min")
+    high = _positive(cutoff["max"], "cutoff_hz.max")
+    if low > high:
+        raise ValueError("cutoff_hz.min must be <= max")
+    if high > _SALLEN_KEY_MAX_CUTOFF_HZ:
+        raise ValueError(
+            "sallen_key_butterworth_lowpass cutoff_hz.max must be <= 150000 Hz; "
+            "the CP_OPAMP unity follower has about 15.9 MHz gain-bandwidth, and this demo "
+            "keeps the requested corner below 1% of that model bandwidth"
+        )
+    target = _positive(cutoff["target"], "cutoff_hz.target") if "target" in cutoff else None
+    if target is not None and not low <= target <= high:
+        raise ValueError("cutoff_hz.target must be within min/max")
+    names_limits = {
+        "resistor_1_ohm": (1e-6, 1e12), "resistor_2_ohm": (1e-6, 1e12),
+        "capacitor_1_f": (1e-15, 1e3), "capacitor_2_f": (1e-15, 1e3),
+    }
+    components = request["components"]
+    if not isinstance(components, dict) or set(components) != set(names_limits):
+        raise ValueError("components must contain resistor_1_ohm, resistor_2_ohm, capacitor_1_f, and capacitor_2_f")
+    normalized_components = {}
+    for name, (physical_min, physical_max) in names_limits.items():
+        bounds = components[name]
+        if not isinstance(bounds, dict) or set(bounds) != {"min", "max", "series"}:
+            raise ValueError(f"components.{name} requires min, max, and series")
+        component_low = _positive(bounds["min"], f"components.{name}.min")
+        component_high = _positive(bounds["max"], f"components.{name}.max")
+        if component_low > component_high or component_low < physical_min or component_high > physical_max:
+            raise ValueError(f"components.{name} bounds are reversed or outside supported physical limits")
+        series = bounds["series"]
+        if not isinstance(series, str) or series.upper() not in _VALUES:
+            raise ValueError(f"components.{name}.series must be E3, E6, E12, or E24")
+        normalized_components[name] = {"min": component_low, "max": component_high, "series": series.upper()}
+    normalized_cutoff = {"min": low, "max": high}
+    if target is not None:
+        normalized_cutoff["target"] = target
+    return {"schema_version": 1, "topology": _SALLEN_KEY_TOPOLOGY,
+            "behavior": {"cutoff_hz": normalized_cutoff}, "components": normalized_components}
+
+
+def _synthesize_sallen_key(spec: Mapping[str, Any]) -> TopologyRequestResult:
+    bounds = spec["behavior"]["cutoff_hz"]
+    log_target = (math.log(bounds["target"]) if "target" in bounds
+                  else (math.log(bounds["min"]) + math.log(bounds["max"])) / 2.0)
+    values = {name: _standard_values(item) for name, item in spec["components"].items()}
+    total = math.prod(len(items) for items in values.values())
+    if total > _SALLEN_KEY_MAX_CANDIDATES:
+        raise ValueError(f"component bounds create {total} E-series tuples; maximum supported search is {_SALLEN_KEY_MAX_CANDIDATES}")
+    best = None
+    best_key = None
+    feasible_count = 0
+    q_target = 1.0 / math.sqrt(2.0)
+    for r1 in values["resistor_1_ohm"]:
+        for r2 in values["resistor_2_ohm"]:
+            for c1 in values["capacitor_1_f"]:
+                for c2 in values["capacitor_2_f"]:
+                    natural_hz = 1.0 / (2.0 * math.pi * math.sqrt(r1 * r2 * c1 * c2))
+                    q_value = math.sqrt(r1 * r2 * c1 / c2) / (r1 + r2)
+                    if not math.isfinite(natural_hz) or not math.isfinite(q_value):
+                        continue
+                    cutoff_hz = _sallen_key_cutoff_hz(natural_hz, q_value)
+                    q_error = abs(q_value - q_target) / q_target
+                    if not bounds["min"] <= cutoff_hz <= bounds["max"] or q_error > _SALLEN_KEY_Q_RELATIVE_TOLERANCE:
+                        continue
+                    feasible_count += 1
+                    item = {"resistor_1_ohm": r1, "resistor_2_ohm": r2,
+                            "capacitor_1_f": c1, "capacitor_2_f": c2,
+                            "natural_frequency_hz": natural_hz, "cutoff_hz": cutoff_hz,
+                            "q": q_value, "butterworth_q": q_target,
+                            "q_relative_error_percent": 100.0 * q_error}
+                    rank = (abs(math.log(cutoff_hz) - log_target), q_error, r1, r2, c1, c2)
+                    if best_key is None or rank < best_key:
+                        best, best_key = item, rank
+    report = {
+        "schema_version": 1, "topology": _SALLEN_KEY_TOPOLOGY,
+        "status": "feasible" if best is not None else "infeasible",
+        "constraint_evidence": "analytical", "verification_status": "not_simulated",
+        "production_qualified": False,
+        "hard_constraints": [
+            {"name": "cutoff_hz", "min": bounds["min"], "max": bounds["max"],
+             "pass": best is not None, "evidence": "analytical"},
+            {"name": "butterworth_q_relative_error", "max_percent": 100 * _SALLEN_KEY_Q_RELATIVE_TOLERANCE,
+             "pass": best is not None, "evidence": "analytical"},
+        ],
+        "candidate_search": {"component_tuples_considered": total,
+                             "feasible_candidate_count": feasible_count,
+                             "ranking_reference_hz": math.exp(log_target),
+                             "ranking_method": "closest in log -3 dB cutoff to target or geometric range center, then Q error"},
+        "candidate": best,
+        "notes": ["Q is constrained to within 5% of the Butterworth value; this is an analytical synthesis screen.",
+                  "The finite-bandwidth CP_OPAMP model is guarded by a 150 kHz maximum requested corner."],
+    }
+    if best is None:
+        raise NoFeasibleCandidateError(report)
+    elements = (
+        CircuitElement.from_statement("VIN in 0 DC 0 AC 1"),
+        CircuitElement.from_statement(f"R1 in n1 {format_spice_number(best['resistor_1_ohm'])}"),
+        CircuitElement.from_statement(f"R2 n1 n2 {format_spice_number(best['resistor_2_ohm'])}"),
+        CircuitElement.from_statement(f"C1 n1 out {format_spice_number(best['capacitor_1_f'])}"),
+        CircuitElement.from_statement(f"C2 n2 0 {format_spice_number(best['capacitor_2_f'])}"),
+        CircuitElement.from_statement("XU1 n2 out out CP_OPAMP"),
+    )
+    fc = best["cutoff_hz"]
+    circuit = CircuitIR("CircuitPilot unity-gain Sallen-Key Butterworth low-pass", elements,
+                        subcircuits=(_OPAMP.strip(),),
+                        directives=(f".ac dec 100 {format_spice_number(fc / 100.0)} {format_spice_number(fc * 20.0)}",))
+    return TopologyRequestResult(circuit, report)
+
+
+def _sallen_key_cutoff_hz(natural_frequency_hz: float, q_factor: float) -> float:
+    """Return the descending -3 dB frequency for a unity-gain second-order low-pass."""
+    coefficient = (1.0 / (q_factor * q_factor)) - 2.0
+    squared_ratio = (-coefficient + math.sqrt(coefficient * coefficient + 4.0)) / 2.0
+    return natural_frequency_hz * math.sqrt(squared_ratio)
 
 
 def _validate_inverting_opamp_request(request: Mapping[str, Any]) -> dict:

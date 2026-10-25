@@ -7,8 +7,8 @@ deterministic SPICE designs, editable LTspice schematics, simulations, measureme
 hard-constraint reports. The longer-term product idea is a VS Code extension. The current
 repository is an engineering prototype, not a production design tool.
 
-The latest behavior-driven synthesis goal is to turn a structured request, and eventually a
-natural-language request, into a selected topology, an initialized candidate, reproducible
+The latest behavior-driven synthesis goal is to turn structured requests and a bounded, deterministic
+sentence grammar into a selected topology, an initialized candidate, reproducible
 `CircuitIR`, and matching ASC/netlist artifacts. LTspice measurements and hard verification
 should decide whether requested limits pass; bounded conventional optimization should refine
 failed candidates, with RL available as an optional later proposal policy. Transfer functions
@@ -16,15 +16,15 @@ may be supplied when useful, but are not required when the selected topology def
 behavior.
 
 The implementation covers structured JSON synthesis for RC low-pass, RC high-pass, RL low-pass,
-an op-amp buffered RC low-pass, an inverting op-amp amplifier, and experimental series RLC
-band-pass requests. The established RC low-pass path searches E-series R/C values, optionally
+an op-amp buffered RC low-pass, an inverting op-amp amplifier, experimental series RLC
+band-pass, and experimental unity-gain Sallen-Key Butterworth low-pass requests. The established RC low-pass path searches E-series R/C values, optionally
 includes nominal source/load resistance and a passband-gain range, and remains backward
 compatible. High-pass and RL low-pass use a small topology dispatch with ideal source/open load
 and cutoff-only constraints. The buffered op-amp path uses the existing generic `CP_OPAMP` macro
 with an ideal source and open load. Series RLC searches explicit R/C/L bounds for a resonance range and
 measures the simulated output peak; it has no Q, source/load, or refinement support. The inverting
 op-amp path searches input/feedback resistor pairs for a gain-magnitude range and measures gain at
-1 kHz, with a 100 V/V model-safe cap. Each
+1 kHz, with a 100 V/V model-safe cap. Sallen-Key searches E-series R1/R2/C1/C2 combinations, screens Q to within 5% of Butterworth, limits requested cutoff to 150 kHz (under 1% of the model's approximately 15.9 MHz gain-bandwidth), and measures the relative -3 dB cutoff; attenuation at 10x cutoff is diagnostic. It uses ideal source/open load. Each
 topology returns a `CircuitIR` and matching netlist/ASC. An
 explicit `--simulate` mode sends the same IR through LTspice,
 estimates low-frequency passband gain from complex AC samples using the one-pole asymptote,
@@ -228,7 +228,7 @@ python -m circuitpilot.design_request_cli --request docs/example-series-rlc-band
 ```
 
 It timed out without raw or log data; its verification report failed closed with no measured
-peak. The folder is a timeout diagnostic, not simulator evidence.
+peak. The folder is a timeout diagnostic, not simulator evidence. The Sallen-Key smoke has not yet been run.
 
 `output/rc_behavior_loaded_20261024_run1` is preserved as a superseded diagnostic: it used the
 biased sweep-start estimate and reported cutoff 1621.894563077167 Hz and gain estimate
@@ -501,15 +501,13 @@ stop on the first measured pass, exhausted budget/candidate set, or simulator/me
 failure. Each attempt is preserved in a separate candidate folder with top-level history and
 summary reports. See [docs/rc-lowpass-request.md](docs/rc-lowpass-request.md) for ranking,
 stop rules, artifact set, and fail-closed behavior.
-The same CLI dispatches `rc_highpass`, `rl_lowpass`, `opamp_rc_lowpass`, and experimental
-`series_rlc_bandpass`, plus `inverting_opamp_amplifier`; see their example JSON files. The op-amp buffered RC low-pass uses the
+The same CLI dispatches `rc_highpass`, `rl_lowpass`, `opamp_rc_lowpass`, experimental
+`series_rlc_bandpass`, `inverting_opamp_amplifier`, and `sallen_key_butterworth_lowpass`; see their example JSON files. The op-amp buffered RC low-pass uses the
 existing generic one-pole `CP_OPAMP` macro and exports `CP_OPAMP.asy` beside simulated ASC files.
 It supports only ideal-source/open-load cutoff checks. RC
 high-pass cutoff uses an ascending -3 dB crossing, while RL low-pass uses a descending crossing.
 The inverting op-amp demo checks gain magnitude at 1 kHz with an inclusive request range and a
-100 V/V limit imposed by the macro's finite gain-bandwidth. These additions currently support only ideal-source/open-load nominal checks, without gain/Q
-bounds, operating-condition corners, or refinement. Series RLC is an experimental handler and
-checks resonance-frequency bounds only.
+100 V/V limit imposed by the macro's finite gain-bandwidth. These additions currently support only ideal-source/open-load nominal checks and no refinement. Series RLC is experimental and checks resonance-frequency bounds only. The Sallen-Key path applies an analytical Butterworth-Q screen; its requested cutoff still passes only from LTspice measurement, and attenuation is reported diagnostically rather than constrained.
 
 Available tests were run with `$env:PYTHONPATH='engine'; python -m unittest discover -s tests/unit -v`;
 all 105 tests passed. `python -m pytest -q` could not run because `pytest` is not installed in

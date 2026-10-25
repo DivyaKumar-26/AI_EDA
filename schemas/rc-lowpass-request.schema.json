@@ -1,12 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "CircuitPilot first-order behavioral filter request v1",
+  "title": "CircuitPilot behavioral circuit request v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "topology", "behavior", "components"],
+  "required": ["schema_version","topology","behavior","components"],
   "properties": {
     "schema_version": {"const": 1},
-    "topology": {"enum": ["rc_lowpass", "rc_highpass", "rl_lowpass", "opamp_rc_lowpass", "inverting_opamp_amplifier", "series_rlc_bandpass"]},
+    "topology": {
+      "enum": ["rc_lowpass","rc_highpass","rl_lowpass","opamp_rc_lowpass","inverting_opamp_amplifier","series_rlc_bandpass","sallen_key_butterworth_lowpass"]
+    },
     "behavior": {
       "type": "object",
       "additionalProperties": false,
@@ -14,40 +16,40 @@
         "cutoff_hz": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["min", "max"],
+          "required": ["min","max"],
           "properties": {
-            "min": {"type": "number", "exclusiveMinimum": 0},
-            "max": {"type": "number", "exclusiveMinimum": 0},
-            "target": {"type": "number", "exclusiveMinimum": 0}
+            "min": {"type": "number","exclusiveMinimum": 0},
+            "max": {"type": "number","exclusiveMinimum": 0},
+            "target": {"type": "number","exclusiveMinimum": 0}
           }
         },
         "resonance_hz": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["min", "max"],
+          "required": ["min","max"],
           "properties": {
-            "min": {"type": "number", "exclusiveMinimum": 0},
-            "max": {"type": "number", "exclusiveMinimum": 0},
-            "target": {"type": "number", "exclusiveMinimum": 0}
+            "min": {"type": "number","exclusiveMinimum": 0},
+            "max": {"type": "number","exclusiveMinimum": 0},
+            "target": {"type": "number","exclusiveMinimum": 0}
           }
         },
         "gain_magnitude": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["min", "max"],
+          "required": ["min","max"],
           "properties": {
-            "min": {"type": "number", "exclusiveMinimum": 0, "maximum": 100},
-            "max": {"type": "number", "exclusiveMinimum": 0, "maximum": 100},
-            "target": {"type": "number", "exclusiveMinimum": 0, "maximum": 100}
+            "min": {"type": "number","exclusiveMinimum": 0,"maximum": 100},
+            "max": {"type": "number","exclusiveMinimum": 0,"maximum": 100},
+            "target": {"type": "number","exclusiveMinimum": 0,"maximum": 100}
           }
         },
         "passband_gain": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["min", "max"],
+          "required": ["min","max"],
           "properties": {
-            "min": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
-            "max": {"type": "number", "exclusiveMinimum": 0, "maximum": 1}
+            "min": {"type": "number","exclusiveMinimum": 0,"maximum": 1},
+            "max": {"type": "number","exclusiveMinimum": 0,"maximum": 1}
           }
         }
       }
@@ -55,13 +57,13 @@
     "operating_conditions": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source_resistance_ohm", "load_resistance_ohm"],
+      "required": ["source_resistance_ohm","load_resistance_ohm"],
       "properties": {
-        "source_resistance_ohm": {"type": "number", "minimum": 0},
+        "source_resistance_ohm": {"type": "number","minimum": 0},
         "load_resistance_ohm": {
           "oneOf": [
             {"type": "null"},
-            {"type": "number", "exclusiveMinimum": 0}
+            {"type": "number","exclusiveMinimum": 0}
           ]
         }
       }
@@ -69,62 +71,140 @@
     "components": {"type": "object"}
   },
   "allOf": [
-    {"if": {"required": ["topology"], "properties": {"topology": {"const": "rc_lowpass"}}}, "then": {"properties": {"behavior": {"required": ["cutoff_hz"], "not": {"required": ["resonance_hz"]}}, "components": {"$ref": "#/$defs/rc_components"}}}},
-    {"if": {"required": ["topology"], "properties": {"topology": {"const": "rc_highpass"}}}, "then": {"properties": {"behavior": {"required": ["cutoff_hz"], "not": {"required": ["resonance_hz"]}}, "components": {"$ref": "#/$defs/rc_components"}}}},
-    {"if": {"required": ["topology"], "properties": {"topology": {"const": "rl_lowpass"}}}, "then": {"properties": {"behavior": {"required": ["cutoff_hz"], "not": {"required": ["resonance_hz"]}}, "components": {"$ref": "#/$defs/rl_components"}}}},
-    {"if": {"required": ["topology"], "properties": {"topology": {"const": "opamp_rc_lowpass"}}}, "then": {"properties": {"behavior": {"required": ["cutoff_hz"], "not": {"anyOf": [{"required": ["resonance_hz"]}, {"required": ["passband_gain"]}]}, "properties": {"cutoff_hz": {"properties": {"max": {"maximum": 150000}}}}}, "components": {"$ref": "#/$defs/rc_components"}}, "not": {"required": ["operating_conditions"]}}},
-    {"if": {"required": ["topology"], "properties": {"topology": {"const": "inverting_opamp_amplifier"}}}, "then": {"properties": {"behavior": {"required": ["gain_magnitude"], "not": {"anyOf": [{"required": ["cutoff_hz"]}, {"required": ["resonance_hz"]}, {"required": ["passband_gain"]}]}}, "components": {"$ref": "#/$defs/opamp_resistor_pair"}}, "not": {"required": ["operating_conditions"]}}},
-    {"if": {"required": ["topology"], "properties": {"topology": {"const": "series_rlc_bandpass"}}}, "then": {"properties": {"behavior": {"required": ["resonance_hz"], "not": {"anyOf": [{"required": ["cutoff_hz"]}, {"required": ["passband_gain"]}]}}, "components": {"$ref": "#/$defs/series_rlc_components"}}, "not": {"required": ["operating_conditions"]}}},
-    {
-      "if": {"required": ["topology"], "properties": {"topology": {"enum": ["rc_highpass", "rl_lowpass", "opamp_rc_lowpass"]}}},
-      "then": {
-        "not": {"required": ["operating_conditions"]},
-        "properties": {"behavior": {"not": {"required": ["passband_gain"]}}}
-      }
-    }
+    {"if": {"required": ["topology"],"properties": {"topology": {"const": "rc_lowpass"}}},"then": {"properties": {"behavior": {"required": ["cutoff_hz"],"not": {"required": ["resonance_hz"]}},"components": {"$ref": "#/$defs/rc_components"}}}},
+    {"if": {"required": ["topology"],"properties": {"topology": {"const": "rc_highpass"}}},"then": {"properties": {"behavior": {"required": ["cutoff_hz"],"not": {"required": ["resonance_hz"]}},"components": {"$ref": "#/$defs/rc_components"}}}},
+    {"if": {"required": ["topology"],"properties": {"topology": {"const": "rl_lowpass"}}},"then": {"properties": {"behavior": {"required": ["cutoff_hz"],"not": {"required": ["resonance_hz"]}},"components": {"$ref": "#/$defs/rl_components"}}}},
+    {"if": {"required": ["topology"],"properties": {"topology": {"const": "opamp_rc_lowpass"}}},"then": {"properties": {"behavior": {"required": ["cutoff_hz"],"not": {"anyOf": [{"required": ["resonance_hz"]},{"required": ["passband_gain"]}]},"properties": {"cutoff_hz": {"properties": {"max": {"maximum": 150000}}}}},"components": {"$ref": "#/$defs/rc_components"}},"not": {"required": ["operating_conditions"]}}},
+    {"if": {"required": ["topology"],"properties": {"topology": {"const": "inverting_opamp_amplifier"}}},"then": {"properties": {"behavior": {"required": ["gain_magnitude"],"not": {"anyOf": [{"required": ["cutoff_hz"]},{"required": ["resonance_hz"]},{"required": ["passband_gain"]}]}},"components": {"$ref": "#/$defs/opamp_resistor_pair"}},"not": {"required": ["operating_conditions"]}}},
+    {"if": {"required": ["topology"],"properties": {"topology": {"const": "series_rlc_bandpass"}}},"then": {"properties": {"behavior": {"required": ["resonance_hz"],"not": {"anyOf": [{"required": ["cutoff_hz"]},{"required": ["passband_gain"]}]}},"components": {"$ref": "#/$defs/series_rlc_components"}},"not": {"required": ["operating_conditions"]}}},
+    {"if": {"required": ["topology"],"properties": {"topology": {"enum": ["rc_highpass","rl_lowpass","opamp_rc_lowpass"]}}},"then": {"not": {"required": ["operating_conditions"]},"properties": {"behavior": {"not": {"required": ["passband_gain"]}}}}},
+    {"if": {"required": ["topology"],"properties": {"topology": {"const": "sallen_key_butterworth_lowpass"}}},"then": {"properties": {"behavior": {"required": ["cutoff_hz"],"not": {"anyOf": [{"required": ["resonance_hz"]},{"required": ["gain_magnitude"]},{"required": ["passband_gain"]}]},"properties": {"cutoff_hz": {"properties": {"max": {"maximum": 150000},"min": {"maximum": 150000}}}}},"components": {"$ref": "#/$defs/sallen_key_components"}},"not": {"required": ["operating_conditions"]}}}
   ],
   "$defs": {
     "rc_components": {
-      "type": "object", "additionalProperties": false,
-      "required": ["resistance_ohm", "capacitance_f"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resistance_ohm","capacitance_f"],
       "properties": {
-        "resistance_ohm": {"allOf": [{"$ref": "#/$defs/component_bounds"}, {"properties": {"min": {"minimum": 1e-06, "maximum": 1000000000000.0}, "max": {"minimum": 1e-06, "maximum": 1000000000000.0}}}]},
-        "capacitance_f": {"allOf": [{"$ref": "#/$defs/component_bounds"}, {"properties": {"min": {"minimum": 1e-15, "maximum": 1000.0}, "max": {"minimum": 1e-15, "maximum": 1000.0}}}]}
+        "resistance_ohm": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-06,"maximum": 1000000000000.0},"max": {"minimum": 1e-06,"maximum": 1000000000000.0}}}
+          ]
+        },
+        "capacitance_f": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-15,"maximum": 1000.0},"max": {"minimum": 1e-15,"maximum": 1000.0}}}
+          ]
+        }
       }
     },
     "rl_components": {
-      "type": "object", "additionalProperties": false,
-      "required": ["resistance_ohm", "inductance_h"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resistance_ohm","inductance_h"],
       "properties": {
-        "resistance_ohm": {"allOf": [{"$ref": "#/$defs/component_bounds"}, {"properties": {"min": {"minimum": 1e-06, "maximum": 1000000000000.0}, "max": {"minimum": 1e-06, "maximum": 1000000000000.0}}}]},
-        "inductance_h": {"allOf": [{"$ref": "#/$defs/component_bounds"}, {"properties": {"min": {"minimum": 1e-12, "maximum": 1000000000.0}, "max": {"minimum": 1e-12, "maximum": 1000000000.0}}}]}
+        "resistance_ohm": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-06,"maximum": 1000000000000.0},"max": {"minimum": 1e-06,"maximum": 1000000000000.0}}}
+          ]
+        },
+        "inductance_h": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-12,"maximum": 1000000000.0},"max": {"minimum": 1e-12,"maximum": 1000000000.0}}}
+          ]
+        }
       }
     },
     "series_rlc_components": {
-      "type": "object", "additionalProperties": false,
-      "required": ["resistance_ohm", "capacitance_f", "inductance_h"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resistance_ohm","capacitance_f","inductance_h"],
       "properties": {
-        "resistance_ohm": {"allOf": [{"$ref": "#/$defs/component_bounds"}, {"properties": {"min": {"minimum": 1e-06, "maximum": 1000000000000.0}, "max": {"minimum": 1e-06, "maximum": 1000000000000.0}}}]},
-        "capacitance_f": {"allOf": [{"$ref": "#/$defs/component_bounds"}, {"properties": {"min": {"minimum": 1e-15, "maximum": 1000.0}, "max": {"minimum": 1e-15, "maximum": 1000.0}}}]},
-        "inductance_h": {"allOf": [{"$ref": "#/$defs/component_bounds"}, {"properties": {"min": {"minimum": 1e-12, "maximum": 1000000000.0}, "max": {"minimum": 1e-12, "maximum": 1000000000.0}}}]}
+        "resistance_ohm": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-06,"maximum": 1000000000000.0},"max": {"minimum": 1e-06,"maximum": 1000000000000.0}}}
+          ]
+        },
+        "capacitance_f": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-15,"maximum": 1000.0},"max": {"minimum": 1e-15,"maximum": 1000.0}}}
+          ]
+        },
+        "inductance_h": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-12,"maximum": 1000000000.0},"max": {"minimum": 1e-12,"maximum": 1000000000.0}}}
+          ]
+        }
       }
     },
     "opamp_resistor_pair": {
-      "type": "object", "additionalProperties": false,
-      "required": ["input_resistance_ohm", "feedback_resistance_ohm"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_resistance_ohm","feedback_resistance_ohm"],
       "properties": {
-        "input_resistance_ohm": {"allOf": [{"$ref": "#/$defs/component_bounds"}, {"properties": {"min": {"minimum": 1e-06, "maximum": 1000000000000.0}, "max": {"minimum": 1e-06, "maximum": 1000000000000.0}}}]},
-        "feedback_resistance_ohm": {"allOf": [{"$ref": "#/$defs/component_bounds"}, {"properties": {"min": {"minimum": 1e-06, "maximum": 1000000000000.0}, "max": {"minimum": 1e-06, "maximum": 1000000000000.0}}}]}
+        "input_resistance_ohm": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-06,"maximum": 1000000000000.0},"max": {"minimum": 1e-06,"maximum": 1000000000000.0}}}
+          ]
+        },
+        "feedback_resistance_ohm": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-06,"maximum": 1000000000000.0},"max": {"minimum": 1e-06,"maximum": 1000000000000.0}}}
+          ]
+        }
       }
     },
     "component_bounds": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["min", "max", "series"],
+      "required": ["min","max","series"],
       "properties": {
-        "min": {"type": "number", "exclusiveMinimum": 0},
-        "max": {"type": "number", "exclusiveMinimum": 0},
-        "series": {"type": "string", "enum": ["E3", "E6", "E12", "E24", "e3", "e6", "e12", "e24"]}
+        "min": {"type": "number","exclusiveMinimum": 0},
+        "max": {"type": "number","exclusiveMinimum": 0},
+        "series": {
+          "type": "string",
+          "enum": ["E3","E6","E12","E24","e3","e6","e12","e24"]
+        }
+      }
+    },
+    "sallen_key_components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resistor_1_ohm","resistor_2_ohm","capacitor_1_f","capacitor_2_f"],
+      "properties": {
+        "resistor_1_ohm": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-06,"maximum": 1000000000000.0},"max": {"minimum": 1e-06,"maximum": 1000000000000.0}}}
+          ]
+        },
+        "resistor_2_ohm": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-06,"maximum": 1000000000000.0},"max": {"minimum": 1e-06,"maximum": 1000000000000.0}}}
+          ]
+        },
+        "capacitor_1_f": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-15,"maximum": 1000.0},"max": {"minimum": 1e-15,"maximum": 1000.0}}}
+          ]
+        },
+        "capacitor_2_f": {
+          "allOf": [
+            {"$ref": "#/$defs/component_bounds"},
+            {"properties": {"min": {"minimum": 1e-15,"maximum": 1000.0},"max": {"minimum": 1e-15,"maximum": 1000.0}}}
+          ]
+        }
       }
     }
   }

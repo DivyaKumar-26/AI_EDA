@@ -26,7 +26,7 @@ def main(argv: list[str] | None = None) -> int:
         "--prompt",
         help="offline sentence grammar for supported behavioral topologies, plus legacy labeled RC low-pass; see docs/plain-language-request.md",
     )
-    parser.add_argument("--simulate", action="store_true", help="run LTspice and verify measured cutoff and requested gain limits")
+    parser.add_argument("--simulate", action="store_true", help="run LTspice and verify requested behavior limits")
     parser.add_argument("--refine", action="store_true", help="try ranked E-series candidates until a measured pass or stop condition")
     parser.add_argument("--budget", type=int, help="maximum LTspice candidate simulations for --refine (required)")
     parser.add_argument("--output-dir", type=Path, help="new, unused folder for simulation artifacts (requires --simulate)")

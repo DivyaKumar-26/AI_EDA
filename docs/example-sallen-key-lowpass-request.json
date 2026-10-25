@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "topology": "sallen_key_butterworth_lowpass",
+  "behavior": {
+    "cutoff_hz": {
+      "min": 1500,
+      "max": 1700,
+      "target": 1591.55
+    }
+  },
+  "components": {
+    "resistor_1_ohm": {"min": 6800, "max": 6800, "series": "E12"},
+    "resistor_2_ohm": {"min": 6800, "max": 6800, "series": "E12"},
+    "capacitor_1_f": {"min": 2.2e-8, "max": 2.2e-8, "series": "E12"},
+    "capacitor_2_f": {"min": 1e-8, "max": 1e-8, "series": "E12"}
+  }
+}

@@ -27,6 +27,8 @@ _UNIT_SCALE = {
 }
 
 _TOPOLOGY_PATTERNS = (
+    ("sallen_key_butterworth_lowpass", re.compile(
+        r"(?:unity[- ]gain\s+)?Sallen[- ]Key\s+Butterworth\s+low[- ]pass(?:\s+filter)?", re.I)),
     ("inverting_opamp_amplifier", re.compile(r"inverting\s+op[- ]amp(?:lifier)?(?:\s+amplifier)?", re.I)),
     ("series_rlc_bandpass", re.compile(r"series\s+RLC\s+band[- ]pass(?:\s+filter)?", re.I)),
     ("opamp_rc_lowpass", re.compile(
@@ -37,6 +39,12 @@ _TOPOLOGY_PATTERNS = (
 )
 
 _TOPOLOGY_REQUIREMENTS = {
+    "sallen_key_butterworth_lowpass": ("cutoff_hz", {
+        "resistor_1_ohm": ("resistor\\s+1", "resistance"),
+        "resistor_2_ohm": ("resistor\\s+2", "resistance"),
+        "capacitor_1_f": ("capacitor\\s+1", "capacitance"),
+        "capacitor_2_f": ("capacitor\\s+2", "capacitance"),
+    }),
     "rc_lowpass": ("cutoff_hz", {"resistance_ohm": ("resistance", "resistance"),
                                     "capacitance_f": ("capacitance", "capacitance")}),
     "rc_highpass": ("cutoff_hz", {"resistance_ohm": ("resistance", "resistance"),
@@ -59,8 +67,8 @@ _LABEL_FORMAT_HINT = (
     "resistance: 1 kOhm to 10 kOhm E12; capacitance: 50 nF to 150 nF E12"
 )
 _SENTENCE_FORMAT_HINT = (
-    "Design an RC low-pass filter with cutoff from 1.5 kHz to 1.7 kHz, "
-    "resistance from 1 kOhm to 10 kOhm using E12, and capacitance from 50 nF to 150 nF using E12."
+    "Design a supported topology with its requested behavior range and every named component range; "
+    "see docs/plain-language-request.md for the exact grammar."
 )
 
 
