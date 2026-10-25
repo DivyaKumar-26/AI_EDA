@@ -1,60 +1,95 @@
 # CircuitPilot
 
-**AI-assisted analog circuit synthesis and verification for LTspice.**
+**Behavior-driven analog circuit design and LTspice verification.** CircuitPilot is a Python
+3.10+ research prototype that turns explicit requirements into a candidate circuit, a SPICE
+netlist (`.cir`), an editable LTspice schematic (`.asc`), and an optional measurement report.
+It is not hardware or production qualified.
 
-CircuitPilot is an early Python prototype for turning explicit analog requirements into
-deterministic SPICE designs, editable LTspice schematics, simulations, measurements, and
-hard-constraint reports. The longer-term product idea is a VS Code extension. The current
-repository is an engineering prototype, not a production design tool.
+The normal design path is **deterministic**: it validates a JSON request or a supported sentence,
+chooses standard E-series component values, and generates both circuit files from one `CircuitIR`.
+LTspice can then measure whether the candidate meets the requested limit. The experimental
+reinforcement-learning (RL) policy is a **separate offline RC benchmark**; it is not connected to
+general circuit synthesis. The sentence parser is rule-based, and no LLM or cloud AI service is
+used. [Implementation status](docs/implementation-plan.md) gives the detailed scope and evidence.
 
-The latest behavior-driven synthesis goal is to turn structured requests and a bounded, deterministic
-sentence grammar into a selected topology, an initialized candidate, reproducible
-`CircuitIR`, and matching ASC/netlist artifacts. LTspice measurements and hard verification
-should decide whether requested limits pass; bounded conventional optimization should refine
-failed candidates, with RL available as an optional later proposal policy. Transfer functions
-may be supplied when useful, but are not required when the selected topology defines the
-behavior.
+## Quick start
 
-The implementation covers structured JSON synthesis for RC low-pass, RC high-pass, RL low-pass,
-an op-amp buffered RC low-pass, an inverting op-amp amplifier, experimental series RLC
-band-pass, and experimental unity-gain Sallen-Key Butterworth low-pass requests. The established RC low-pass path searches E-series R/C values, optionally
-includes nominal source/load resistance and a passband-gain range, and remains backward
-compatible. High-pass and RL low-pass use a small topology dispatch with ideal source/open load
-and cutoff-only constraints. The buffered op-amp path uses the existing generic `CP_OPAMP` macro
-with an ideal source and open load. Series RLC searches explicit R/C/L bounds for a resonance range and
-measures the simulated output peak; it has no Q, source/load, or refinement support. The inverting
-op-amp path searches input/feedback resistor pairs for a gain-magnitude range and measures gain at
-1 kHz, with a 100 V/V model-safe cap. Sallen-Key searches E-series R1/R2/C1/C2 combinations, screens Q to within 5% of Butterworth, limits requested cutoff to 150 kHz (under 1% of the model's approximately 15.9 MHz gain-bandwidth), and measures the relative -3 dB cutoff; attenuation at 10x cutoff is diagnostic. It uses ideal source/open load. Each
-topology returns a `CircuitIR` and matching netlist/ASC. An
-explicit `--simulate` mode sends the same IR through LTspice,
-estimates low-frequency passband gain from complex AC samples using the one-pole asymptote,
-measures cutoff relative to it, and checks the requested
-cutoff and optional gain bounds. A bounded `--refine` mode searches allowed E-series R/C pairs
-under an explicit simulation budget. Loaded request behavior has regression coverage and a
-real LTspice run covering nominal finite source/load conditions, cutoff, and passband gain.
-High-pass and RL paths do not yet support loaded conditions or bounded refinement. Continuous
-optimization, operating-condition corners, and other behaviors/topologies remain unsupported in
-the request path. The six-example workflows remain separate.
-
-## Installable Python package
-
-CircuitPilot can be installed from this repository without extra Python runtime dependencies.
-It requires Python 3.10 or newer. From the repository root, install an editable checkout with:
+In PowerShell, clone the repository and move into it. Python 3.10+ and Git are required.
+LTspice is needed only for simulation.
 
 ```powershell
+git clone https://github.com/DivyaKumar-26/AI_EDA.git
+cd AI_EDA
 python -m pip install -e .
+
+# Synthesize an inverting amplifier without LTspice.
+python -m circuitpilot.design_request_cli --request docs/example-inverting-opamp-request.json
 ```
 
-The `circuitpilot-design` command validates and synthesizes a JSON or supported sentence-style
-request. JSON-request mode prints the `CircuitIR`, netlist, ASC text, and synthesis report;
-sentence-prompt mode also includes the original prompt and `normalized_request` intake result:
+The command prints the selected components, `CircuitIR`, netlist, schematic text, and synthesis
+report. Synthesis is an analytical candidate selection; it does not mean the circuit has passed
+simulation. For a real LTspice AC measurement, run the following with **a new output folder**:
 
 ```powershell
-circuitpilot-design --request request.json
-circuitpilot-design --prompt "Design an RC low-pass filter with cutoff from 1.5 kHz to 1.7 kHz, resistance from 1 kOhm to 10 kOhm using E12, and capacitance from 50 nF to 150 nF using E12."
+python -m circuitpilot.design_request_cli --request docs/example-inverting-opamp-request.json --simulate --output-dir output/quickstart_inverting_1 --ltspice 'D:\LTspice\LTspice.exe' --timeout 120
 ```
 
-An import-level synthesis example uses the same request validators and synthesis path as the CLI:
+Replace the LTspice path with your installation path, or omit `--ltspice` if the executable is
+discoverable. The output folder contains `design.cir`, `design.asc`, the request, a verification
+report, and the LTspice files. Open `design.asc` in LTspice to inspect the schematic. Runs refuse
+to overwrite an existing output folder; choose a new name for each run.
+
+You can also submit a supported sentence instead of JSON:
+
+```powershell
+python -m circuitpilot.design_request_cli --prompt "Design an RC low-pass filter with cutoff from 1.5 kHz to 1.7 kHz, resistance from 1 kOhm to 10 kOhm using E12, and capacitance from 50 nF to 150 nF using E12."
+```
+
+The sentence grammar is deliberately narrow. It asks for missing limits and rejects unsupported
+phrasing. See [supported sentence formats](docs/plain-language-request.md).
+
+## Supported behavioral requests
+
+| Topology | Requested behavior | Example request |
+| --- | --- | --- |
+| RC low-pass | Cutoff; optional nominal source/load and passband gain | [JSON](docs/example-rc-lowpass-request.json) |
+| RC high-pass | Cutoff | [JSON](docs/example-rc-highpass-request.json) |
+| RL low-pass | Cutoff | [JSON](docs/example-rl-lowpass-request.json) |
+| Buffered RC low-pass | Cutoff | [JSON](docs/example-opamp-rc-lowpass-request.json) |
+| Series RLC band-pass (experimental) | Resonance frequency | [JSON](docs/example-series-rlc-bandpass-request.json) |
+| Inverting op-amp amplifier | Gain magnitude at 1 kHz | [JSON](docs/example-inverting-opamp-request.json) |
+| Sallen-Key Butterworth low-pass (experimental) | Cutoff, with analytical Q screen | [JSON](docs/example-sallen-key-lowpass-request.json) |
+
+The new Sallen-Key path generates candidates but has **not yet had a real LTspice smoke run**.
+Its Q screen is analytical, and its reported high-frequency attenuation is diagnostic. Only the
+RC low-pass request currently supports bounded simulation-based refinement. The separate six
+fixed example circuits are described [below](#supported-examples).
+
+## Experimental RL benchmark
+
+The RL experiment uses a fixed grid of nine RC low-pass candidates whose LTspice cutoff traces
+are saved in this repository. It trains a tabular Q-learning proposal policy and compares it
+with analytical ranking on held-out target ranges. It does **not** launch new LTspice simulations
+or design the other topologies. In the preserved global-proposal run, RL passed **18/45** cases;
+the start-aware analytical baseline passed **45/45** under the same three-measurement budget.
+These results show that the current RL policy needs improvement.
+
+To reproduce the recorded configuration from a full clone (this can take longer than the quick
+start), use a fresh output folder:
+
+```powershell
+python -m circuitpilot.benchmark_rc_policy --dataset output/rl_rc_v1/benchmark.json --output-dir output/rl_reproduction_1 --seed 20261025 --training-episodes 120000 --candidate-budget 3 --training-max-steps 8 --proposal-mode global
+```
+
+The pinned raw traces and reports under `output/rl_rc_v1` are required. They are present in the
+Git checkout but are not bundled in the installable wheel. The recorded [summary](output/rl_rc_target_benchmark_v7/summary.json)
+and [comparison report](output/rl_rc_policy_comparison_v7_final/report.md) can be read without
+retraining.
+
+## Use from Python
+
+The installable `circuitpilot` package exposes the same request validation and synthesis path
+used by the CLI. This example does not require LTspice:
 
 ```python
 from circuitpilot import (
@@ -93,22 +128,9 @@ if intake["status"] == "complete":
 
 The public API also exposes `CircuitIR` types and simulation functions. `simulate_rc_request`
 handles RC low-pass requests and returns an `RCRequestRun`; `simulate_topology_request` handles
-the other supported behavioral topologies and returns the candidate plus verification report.
-Both simulation functions require a new, unused output directory and write run artifacts there.
-LTspice is an external executable required only for simulation; synthesis and artifact rendering
-run offline. The
-`circuitpilot-examples` and `circuitpilot-schematics` commands serve the separate six-example
-workflows. The experimental RL benchmark module is included in the package, but it has no
-dedicated console entry point and its measured-data tree is not bundled in the wheel. The default
-dataset path is source-checkout-relative, so an installed run must pass `--dataset` pointing to
-the full provenance-pinned `output/rl_rc_v1/benchmark.json` tree, including every referenced
-simulation report and raw trace. Otherwise, run the benchmark from the source checkout. This
-remains a fixed-grid experiment, not a general-purpose RL design feature. An installed invocation
-must name both the complete dataset tree and a fresh output folder:
-
-```powershell
-python -m circuitpilot.benchmark_rc_policy --dataset C:\data\rl_rc_v1\benchmark.json --output-dir C:\data\new-policy-run
-```
+the other supported behavioral topologies and returns a candidate and verification report.
+Both require a new, unused output directory and an LTspice executable for simulation.
+`circuitpilot-examples` and `circuitpilot-schematics` serve the separate six-example workflows.
 
 ## Project goal
 
@@ -128,16 +150,12 @@ qualification.
 
 ## Current project state
 
-The repository's synced baseline is `26fe3c9`, which contains the six-design schematic grid
-exporter and generic demonstration models. The current working tree adds strict JSON
-requirement validation/evaluation, nominal supply/source-resistance/load insertion for CIR
-spec runs, and a native `.net` parser/comparator used by the ASC simulation workflow. These
-changes have unit coverage. LTspice 26.1.1 has completed all six CIR simulations and all six
-ASC native-netlist simulations; every ASC comparison matches its CIR report. The exact
-artifacts and limits of this evidence are recorded below. Final independent review of the
-implementation and simulator evidence is complete. The reviewer checked MOS, BJT, and op-amp
-native-netlist normalization against actual LTspice 26.1.1 netlists and audited all six CIR/
-ASC reports and comparisons; the review found no actionable issues.
+The request path validates explicit bounds, searches supported standard values, and generates
+matching CIR and ASC artifacts from one `CircuitIR`. A separate six-design reference workflow
+contains MOSFET, BJT, and op-amp examples. LTspice 26.1.1 completed all six reference CIR and
+ASC simulations, and each recorded ASC comparison matches its CIR report. The detailed
+artifacts and limits of that evidence are recorded below. The latest Sallen-Key request path
+is experimental and still lacks a real LTspice smoke run.
 
 The implementation remains incomplete. It does not yet execute requested temperature,
 supply, resistor, or capacitor corners; apply transient input amplitude/frequency; measure
@@ -458,13 +476,11 @@ The structured schema is [`schemas/rc-lowpass-request.schema.json`](schemas/rc-l
 
 ## Reproducible commands
 
-Run from the directory containing this README. In this checkout that project root is
-`D:\circuit_design\circuit_Design`; the outer `D:\circuit_design` directory is only a
-container.
+Run from the directory containing this README. The quick start above covers installation and
+the shortest path to a first design. The commands below cover additional workflows. Replace
+angle-bracket placeholders with your own paths and use a fresh output folder for each run.
 
 ```powershell
-Set-Location <project-root>
-$env:PYTHONPATH = "engine"
 python -m circuitpilot --r 1000 --c 1e-7
 python -m circuitpilot.examples_cli --list
 python -m circuitpilot.examples_cli --design inverting-opamp-amplifier --output-root output/<new-run-folder> --timeout 240
@@ -478,14 +494,15 @@ python -m circuitpilot.design_request_cli --request docs/example-rl-lowpass-requ
 python -m circuitpilot.design_request_cli --request docs/example-series-rlc-bandpass-request.json --simulate --output-dir output/<new-series-rlc-run> --ltspice <path-to-LTspice.exe> --timeout 120
 python -m circuitpilot.design_request_cli --request docs/example-opamp-rc-lowpass-request.json --simulate --output-dir output/<new-opamp-rc-run> --ltspice <path-to-LTspice.exe> --timeout 120
 python -m circuitpilot.design_request_cli --request docs/example-inverting-opamp-request.json --simulate --output-dir output/<new-inverting-opamp-run> --ltspice <path-to-LTspice.exe> --timeout 120
+python -m circuitpilot.design_request_cli --request docs/example-sallen-key-lowpass-request.json
 python -m circuitpilot.schematics_cli --export-only --output-root output/<new-asc-export-folder>
 python -m circuitpilot.schematics_cli --output-root output/<new-asc-run-folder> --reference-root output/<matching-cir-run-folder> --timeout 240
-python -m pytest -q
+python -m unittest discover -s tests/unit -v
 ```
 
 The placeholders must be replaced with new, unused output folder names because runs refuse
-to overwrite artifacts. LTspice for Windows is required for simulation; pass `--ltspice
-<path-to-LTspice.exe>` if discovery fails. The ASC simulation command expects a completed
+to overwrite artifacts. LTspice for Windows is required for simulation; pass
+`--ltspice <path-to-LTspice.exe>` if discovery fails. The ASC simulation command expects a completed
 CIR report tree at `--reference-root`.
 
 The RC command generates a deterministic netlist and analytical cutoff estimate without
@@ -509,11 +526,10 @@ high-pass cutoff uses an ascending -3 dB crossing, while RL low-pass uses a desc
 The inverting op-amp demo checks gain magnitude at 1 kHz with an inclusive request range and a
 100 V/V limit imposed by the macro's finite gain-bandwidth. These additions currently support only ideal-source/open-load nominal checks and no refinement. Series RLC is experimental and checks resonance-frequency bounds only. The Sallen-Key path applies an analytical Butterworth-Q screen; its requested cutoff still passes only from LTspice measurement, and attenuation is reported diagnostically rather than constrained.
 
-Available tests were run with `$env:PYTHONPATH='engine'; python -m unittest discover -s tests/unit -v`;
-all 105 tests passed. `python -m pytest -q` could not run because `pytest` is not installed in
-the environment. The six-design LTspice evidence is complete at the paths above and received
-independent review with no actionable findings. The historical v1/v2 diagnostic notes do not
-establish a final design pass.
+A prior run of `python -m unittest discover -s tests/unit -v` reported 105 passing tests.
+That result predates the experimental Sallen-Key path and does not cover it. The six-design
+LTspice evidence is complete at the paths above and received independent review with no
+actionable findings. The historical v1/v2 diagnostic notes do not establish a final design pass.
 
 ## Source map
 
@@ -532,8 +548,8 @@ establish a final design pass.
   complex-AC asymptote gain and relative-cutoff measurements, hard verification, and request-run artifacts.
 - `engine/circuitpilot/rc_request_refinement.py`: bounded deterministic E-series candidate
   refinement, per-attempt evidence, and ordered history/summary reports.
-- `engine/circuitpilot/topology_requests.py`: small topology dispatch and RC high-pass/RL low-pass
-  synthesis plus experimental series RLC synthesis and nominal measurement handlers.
+- `engine/circuitpilot/topology_requests.py`: topology dispatch, candidate synthesis, and
+  nominal measurement handlers for the additional behavioral requests.
 - `engine/circuitpilot/schematic.py`: ASC rendering, symbol mapping, connectivity manifests,
   and support symbols.
 - `engine/circuitpilot/schematic_validation.py`: native LTspice `.net` IR pin/value checker.
@@ -541,33 +557,19 @@ establish a final design pass.
   simulation workflow.
 - `engine/circuitpilot/train_rc_policy.py`: fixed-grid RC measured-table Q-learning
   experiment.
+- `engine/circuitpilot/benchmark_rc_policy.py`: fixed-grid RC proposal-policy benchmark.
 - `schemas/`: topology, IR, and design-requirements schemas.
 - `tests/unit/`: unit and integration regressions for the current source.
 - `output/`: preserved run artifacts. Never overwrite or remove old evidence to make a new
   run appear clean.
 
-## Handoff for the next agent
+## Development notes
 
-1. Start by reading `AGENTS.md`, this README, `git status`, and the current diff. The synced
-   baseline commit is `26fe3c9`; substantial work remains uncommitted.
-2. Treat `output/analog_examples_v2` and `output/rl_rc_v1` as historical completed evidence.
-   Preserve incomplete `production_reference_v1` and `production_reference_v2` folders as
-   diagnostics only if encountered in another working tree; do not call them final evidence.
-3. Inspect the current source and review requirement validation, nominal source/load wiring,
-   native `.net` checking, reference device models, common-emitter feedback, and the missing
-   transient/corner workflows. Add or repair tests where needed.
-4. Run the authoritative project test suite from this root. The current six-design CIR
-   evidence is in `output/ltspice_26_1_1_cir_20261024`; run a fresh CIR suite if source changes.
-5. The current ASC evidence is in `output/ltspice_26_1_1_asc_complete_20261024`. If source
-   changes, run ASC against matching fresh CIR reports and require native `.net` validation,
-   simulation completion, and report comparisons for all six designs.
-6. After any new simulator run, record exact artifact paths, simulator version, results, and
-   test command here. Preserve `production_qualified: false`.
-7. Independent review of the current implementation and six-design reports is complete with
-   no actionable findings. Repeat review after changes and retain `production_qualified: false`.
-
-The user has requested GPT-6 Luna for implementation and the independent reviewer. Follow
-that preference when available. Push or commit only when the user explicitly requests it.
+The preserved runs in `output/` document historical experiments. Keep their success and failure
+reports separate when interpreting results. The six reference CIR/ASC runs do not qualify the
+behavioral request path, and the Sallen-Key addition still needs direct LTspice evidence and
+regression coverage. See [the implementation plan](docs/implementation-plan.md) for current gaps
+and [AGENTS.md](AGENTS.md) for repository engineering workflow instructions.
 
 ## Future plan
 
